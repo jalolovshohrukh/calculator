@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ApartmentCalcFormValues } from '@/lib/schema';
@@ -34,7 +35,7 @@ export function EstateCalcForm() {
       floor: 1,
       apartmentNumber: 101,
       sizeSqMeters: 80,
-      pricePerSqMeter: 500,
+      pricePerSqMeter: 5000000, // Changed to a more realistic UZS value
       numberOfRooms: 3,
       downPaymentType: 'percentage',
       downPaymentPercentage: 30,
@@ -66,30 +67,28 @@ export function EstateCalcForm() {
     let discount = 0;
     let discountPercentageVal = 0;
     
-    // Determine the intended down payment percentage relative to the original total price
-    // to calculate the discount percentage.
-    let intendedDownPaymentRatioForDiscountCalc = 0;
+    // Calculate potential down payment amount based on *original total price* to determine discount tier
+    let potentialDownPaymentForDiscountTier = 0;
     if (watchedDownPaymentType === 'percentage') {
         const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
         if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
-            intendedDownPaymentRatioForDiscountCalc = parsedDpPercentage / 100;
+            potentialDownPaymentForDiscountTier = (parsedDpPercentage / 100) * totalPrice;
         }
     } else { // 'fixed'
         const parsedDpFixed = parseFloat(String(downPaymentFixed));
-        if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0 && totalPrice > 0) {
-            intendedDownPaymentRatioForDiscountCalc = parsedDpFixed / totalPrice;
-        } else if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0 && totalPrice === 0) {
-             // If total price is 0, any positive fixed payment is like 100% for discount purposes
-            intendedDownPaymentRatioForDiscountCalc = 1;
+        if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0) {
+            potentialDownPaymentForDiscountTier = parsedDpFixed;
         }
     }
     
-    if (intendedDownPaymentRatioForDiscountCalc >= 1) { // 100% or more of original price
-      discount = 0.07 * totalPrice; // 7% discount on original total price
-      discountPercentageVal = 7;
-    } else if (intendedDownPaymentRatioForDiscountCalc >= 0.5) { // 50% to 99.99% of original price
-      discount = 0.03 * totalPrice; // 3% discount on original total price
-      discountPercentageVal = 3;
+    if (totalPrice > 0) { // Ensure totalPrice is not zero to avoid division by zero or incorrect ratios
+        if (potentialDownPaymentForDiscountTier >= totalPrice) { // 100% or more of original price
+            discount = 0.07 * totalPrice; // 7% discount on original total price
+            discountPercentageVal = 7;
+        } else if (potentialDownPaymentForDiscountTier >= 0.5 * totalPrice) { // 50% to 99.99% of original price
+            discount = 0.03 * totalPrice; // 3% discount on original total price
+            discountPercentageVal = 3;
+        }
     }
     
     const totalPriceAfterDiscount = totalPrice - discount;
@@ -320,7 +319,7 @@ export function EstateCalcForm() {
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-[50vh] sm:h-[60vh] lg:h-[70vh] w-full rounded-md border border-border bg-muted/30">
-                    <div className="p-2 sm:p-4 flex justify-center items-start"> {/* Added wrapper for padding and centering */}
+                    <div className="p-2 sm:p-4"> {/* Removed flex, justify-center, items-start */}
                       <PrintablePage formData={form.getValues()} calculations={calculations} />
                     </div>
                   </ScrollArea>
