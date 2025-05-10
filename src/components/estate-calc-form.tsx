@@ -147,7 +147,7 @@ export function EstateCalcForm() {
         <form onSubmit={form.handleSubmit(() => {})} className="space-y-8">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
             {/* Form Inputs Column */}
-            <div className="lg:col-span-3 space-y-6"> {/* Changed from lg:col-span-4 */}
+            <div className="lg:col-span-4 space-y-6"> {/* Changed from lg:col-span-3 */}
               <Card className="shadow-xl">
                 <CardHeader>
                   <CardTitle className="text-2xl text-primary">Mulk va To'lov Tafsilotlari</CardTitle>
@@ -312,7 +312,7 @@ export function EstateCalcForm() {
             </div>
 
             {/* Preview Column */}
-            <div className="lg:col-span-9 mt-8 lg:mt-0 no-print"> {/* Changed from lg:col-span-8 */}
+            <div className="lg:col-span-8 mt-8 lg:mt-0 no-print"> {/* Changed from lg:col-span-9 */}
               <Card className="shadow-xl">
                 <CardHeader>
                   <CardTitle className="text-2xl text-primary">Narxnoma Ko'rinishi</CardTitle>
