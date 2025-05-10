@@ -3,7 +3,8 @@ import type { ApartmentCalcFormValues } from '@/lib/schema';
 import { Logo } from '@/components/logo';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { QrCode, Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail, MapPin } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface PrintablePageProps {
   formData: ApartmentCalcFormValues;
@@ -19,7 +20,10 @@ interface PrintablePageProps {
 }
 
 const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('uz-UZ', { style: 'currency', currency: 'UZS', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
+  // Use Intl.NumberFormat with a fixed locale and currency to ensure consistent formatting
+  // between server and client. Using 'en-US' with 'UZS' to get the desired "UZS 500" format.
+  // Adjust locale if a different format is needed, but keep it consistent.
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'UZS', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
 };
 
 export function PrintablePage({ formData, calculations }: PrintablePageProps) {
@@ -59,17 +63,17 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
                   <span>- {formatCurrency(calculations.discountApplied)}</span>
                 </div>
               )}
-              <Separator/>
+              <Separator />
               <div className="flex justify-between font-semibold"><span>Jami Sof Narx:</span> <span>{formatCurrency(calculations.totalPriceAfterDiscount)}</span></div>
             </CardContent>
           </Card>
         </section>
-        
+
 
         {/* Payment Details */}
         <section>
           <h2 className="text-lg font-semibold text-primary mb-2">To'lov Rejasi</h2>
-           <Card className="border-primary">
+          <Card className="border-primary">
             <CardContent className="p-4 space-y-2">
               <div className="flex justify-between">
                 <span>Boshlang'ich To'lov:</span>
@@ -86,8 +90,8 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
             </CardContent>
           </Card>
         </section>
-        
-        <div className="flex-grow"></div> 
+
+        <div className="flex-grow"></div>
 
         {/* Footer */}
         <footer className="mt-auto pt-4 border-t border-border text-xs">
@@ -95,19 +99,26 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
             <div>
               <h3 className="font-semibold mb-1 text-primary">Aloqa Ma'lumotlari</h3>
               <div className="flex items-center space-x-2 mb-1">
-                <Phone size={14} /> <span>+1 (555) 123-4567</span>
+                <Phone size={14} /> <span>+998 94 504 80 80</span>
               </div>
               <div className="flex items-center space-x-2 mb-1">
-                <Mail size={14} /> <span>contact@estatecalc.com</span>
+                <Mail size={14} /> <span>citypark.uz@gmail.com</span>
               </div>
               <div className="flex items-center space-x-2">
-                <MapPin size={14} /> <span>123 Property Lane, Real Estate City, RC 12345</span>
+                <MapPin size={14} /> <span>Denov, Sharof Rashidov ko'chasi, 261B</span>
               </div>
             </div>
             <div className="flex flex-col items-end justify-center">
-              <QrCode size={64} data-ai-hint="cityparkdenou website" className="text-muted-foreground" />
+              <QRCodeSVG
+                value="https://cityparkdenou.vercel.app"
+                width={64}
+                height={64}
+                className="rounded"
+                fgColor="#004040 "       // Foreground (QR code) color - example: Tailwind's blue-800
+              />
               <p className="mt-1 text-muted-foreground">Kompaniya veb-sayti uchun skanerlang</p>
             </div>
+
           </div>
           <p className="text-center text-muted-foreground mt-4">Qiziqishingiz uchun tashakkur! Ushbu narxnoma 30 kun davomida amal qiladi.</p>
         </footer>
