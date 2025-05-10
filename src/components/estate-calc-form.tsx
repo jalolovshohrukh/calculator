@@ -4,11 +4,11 @@
 import type { ApartmentCalcFormValues } from '@/lib/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form'; // Removed Controller as it's not directly used here, FormField handles it
 import { apartmentCalcSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+// import { Label } from '@/components/ui/label'; // No longer needed directly
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,24 +39,26 @@ export function EstateCalcForm() {
       pricePerSqMeter: 500,
       downPaymentType: 'percentage',
       downPaymentPercentage: 30,
+      // downPaymentFixed is intentionally omitted as type is 'percentage' by default
+      // and schema makes it optional. It will be undefined if not set.
       installmentMonths: 12,
     },
   });
 
   const [calculations, setCalculations] = useState(initialCalculations);
 
-  const watchedValues = form.watch();
+  // Watch individual fields for useEffect dependencies
+  const sizeSqMeters = form.watch("sizeSqMeters");
+  const pricePerSqMeter = form.watch("pricePerSqMeter");
+  const watchedDownPaymentType = form.watch("downPaymentType"); 
+  const downPaymentPercentage = form.watch("downPaymentPercentage");
+  const downPaymentFixed = form.watch("downPaymentFixed");
+  const watchedInstallmentMonths = form.watch("installmentMonths");
+
 
   useEffect(() => {
-    const {
-      sizeSqMeters,
-      pricePerSqMeter,
-      downPaymentType,
-      downPaymentPercentage,
-      downPaymentFixed,
-      installmentMonths,
-    } = watchedValues;
-
+    // Use the watched values directly. These will be numbers or undefined due to schema coercion or optionality.
+    // String() will convert undefined to "undefined", parseFloat("undefined") is NaN.
     const parsedSize = parseFloat(String(sizeSqMeters));
     const parsedPrice = parseFloat(String(pricePerSqMeter));
 
@@ -68,18 +70,17 @@ export function EstateCalcForm() {
     const totalPrice = parsedSize * parsedPrice;
 
     let dpAmount = 0;
-    if (downPaymentType === 'percentage') {
+    if (watchedDownPaymentType === 'percentage') {
       const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
       if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
         dpAmount = (parsedDpPercentage / 100) * totalPrice;
       }
-    } else {
+    } else { // type is 'fixed'
       const parsedDpFixed = parseFloat(String(downPaymentFixed));
       if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0) {
         dpAmount = parsedDpFixed;
       }
     }
-    // Ensure dpAmount does not exceed totalPrice
     dpAmount = Math.min(dpAmount, totalPrice);
 
 
@@ -97,7 +98,9 @@ export function EstateCalcForm() {
     
     const totalPriceAfterDiscount = totalPrice - discount;
     const remaining = totalPriceAfterDiscount - dpAmount;
-    const monthly = installmentMonths > 0 ? remaining / installmentMonths : 0;
+    // Ensure watchedInstallmentMonths is a number for calculation
+    const currentInstallmentMonths = Number(watchedInstallmentMonths) || 0;
+    const monthly = currentInstallmentMonths > 0 ? remaining / currentInstallmentMonths : 0;
 
     setCalculations({
       totalPrice: totalPrice,
@@ -105,16 +108,25 @@ export function EstateCalcForm() {
       discountPercentageVal: discountPercentageDisplay,
       totalPriceAfterDiscount: totalPriceAfterDiscount,
       downPaymentAmount: dpAmount,
-      remainingAmount: Math.max(0, remaining), // Ensure remaining is not negative
-      monthlyInstallment: Math.max(0, monthly), // Ensure monthly is not negative
+      remainingAmount: Math.max(0, remaining),
+      monthlyInstallment: Math.max(0, monthly),
     });
-  }, [watchedValues]);
+  }, [
+    sizeSqMeters, 
+    pricePerSqMeter, 
+    watchedDownPaymentType, 
+    downPaymentPercentage, 
+    downPaymentFixed, 
+    watchedInstallmentMonths
+  ]);
 
   const handlePrint = () => {
     window.print();
   };
   
-  const downPaymentType = form.watch("downPaymentType");
+  // This watch is specifically for conditional rendering, separate from useEffect.
+  const downPaymentTypeForConditionalRender = form.watch("downPaymentType");
+
 
   return (
     <div className="container mx-auto p-4 lg:p-8">
@@ -200,16 +212,16 @@ export function EstateCalcForm() {
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
-                            value={field.value} // Changed from defaultValue to value
+                            value={field.value}
                             className="flex space-x-4"
                           >
                             <FormItem className="flex items-center space-x-2 space-y-0">
-                              <FormControl><RadioGroupItem value="percentage" /></FormControl>
-                              <FormLabel className="font-normal">Percentage (%)</FormLabel>
+                              <FormControl><RadioGroupItem value="percentage" id="dpTypePercentage" /></FormControl>
+                              <FormLabel htmlFor="dpTypePercentage" className="font-normal">Percentage (%)</FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-2 space-y-0">
-                              <FormControl><RadioGroupItem value="fixed" /></FormControl>
-                              <FormLabel className="font-normal">Fixed Amount ($)</FormLabel>
+                              <FormControl><RadioGroupItem value="fixed" id="dpTypeFixed" /></FormControl>
+                              <FormLabel htmlFor="dpTypeFixed" className="font-normal">Fixed Amount ($)</FormLabel>
                             </FormItem>
                           </RadioGroup>
                         </FormControl>
@@ -218,7 +230,7 @@ export function EstateCalcForm() {
                     )}
                   />
 
-                  {downPaymentType === 'percentage' && (
+                  {downPaymentTypeForConditionalRender === 'percentage' && (
                     <FormField
                       control={form.control}
                       name="downPaymentPercentage"
@@ -231,7 +243,7 @@ export function EstateCalcForm() {
                       )}
                     />
                   )}
-                  {downPaymentType === 'fixed' && (
+                  {downPaymentTypeForConditionalRender === 'fixed' && (
                     <FormField
                       control={form.control}
                       name="downPaymentFixed"
@@ -251,7 +263,10 @@ export function EstateCalcForm() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="flex items-center"><CalendarDays className="mr-2 h-4 w-4 text-primary" />Installment Months</FormLabel>
-                        <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={String(field.value)}>
+                        <Select 
+                            onValueChange={(value) => field.onChange(Number(value))} 
+                            value={String(field.value)} // Ensure value is string for Select
+                        >
                           <FormControl><SelectTrigger><SelectValue placeholder="Select months" /></SelectTrigger></FormControl>
                           <SelectContent>
                             <SelectItem value="12">12 Months</SelectItem>
@@ -295,3 +310,4 @@ export function EstateCalcForm() {
   );
 }
 
+    
