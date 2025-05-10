@@ -18,7 +18,7 @@ interface PrintablePageProps {
 }
 
 const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'UZS' }).format(amount);
 };
 
 export function PrintablePage({ formData, calculations }: PrintablePageProps) {

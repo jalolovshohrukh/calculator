@@ -4,11 +4,10 @@
 import type { ApartmentCalcFormValues } from '@/lib/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form'; // Removed Controller as it's not directly used here, FormField handles it
+import { useForm } from 'react-hook-form'; 
 import { apartmentCalcSchema } from '@/lib/schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-// import { Label } from '@/components/ui/label'; // No longer needed directly
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,15 +38,12 @@ export function EstateCalcForm() {
       pricePerSqMeter: 500,
       downPaymentType: 'percentage',
       downPaymentPercentage: 30,
-      // downPaymentFixed is intentionally omitted as type is 'percentage' by default
-      // and schema makes it optional. It will be undefined if not set.
       installmentMonths: 12,
     },
   });
 
   const [calculations, setCalculations] = useState(initialCalculations);
 
-  // Watch individual fields for useEffect dependencies
   const sizeSqMeters = form.watch("sizeSqMeters");
   const pricePerSqMeter = form.watch("pricePerSqMeter");
   const watchedDownPaymentType = form.watch("downPaymentType"); 
@@ -57,8 +53,6 @@ export function EstateCalcForm() {
 
 
   useEffect(() => {
-    // Use the watched values directly. These will be numbers or undefined due to schema coercion or optionality.
-    // String() will convert undefined to "undefined", parseFloat("undefined") is NaN.
     const parsedSize = parseFloat(String(sizeSqMeters));
     const parsedPrice = parseFloat(String(pricePerSqMeter));
 
@@ -75,7 +69,7 @@ export function EstateCalcForm() {
       if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
         dpAmount = (parsedDpPercentage / 100) * totalPrice;
       }
-    } else { // type is 'fixed'
+    } else { 
       const parsedDpFixed = parseFloat(String(downPaymentFixed));
       if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0) {
         dpAmount = parsedDpFixed;
@@ -98,7 +92,6 @@ export function EstateCalcForm() {
     
     const totalPriceAfterDiscount = totalPrice - discount;
     const remaining = totalPriceAfterDiscount - dpAmount;
-    // Ensure watchedInstallmentMonths is a number for calculation
     const currentInstallmentMonths = Number(watchedInstallmentMonths) || 0;
     const monthly = currentInstallmentMonths > 0 ? remaining / currentInstallmentMonths : 0;
 
@@ -124,7 +117,6 @@ export function EstateCalcForm() {
     window.print();
   };
   
-  // This watch is specifically for conditional rendering, separate from useEffect.
   const downPaymentTypeForConditionalRender = form.watch("downPaymentType");
 
 
@@ -221,7 +213,7 @@ export function EstateCalcForm() {
                             </FormItem>
                             <FormItem className="flex items-center space-x-2 space-y-0">
                               <FormControl><RadioGroupItem value="fixed" id="dpTypeFixed" /></FormControl>
-                              <FormLabel htmlFor="dpTypeFixed" className="font-normal">Fixed Amount ($)</FormLabel>
+                              <FormLabel htmlFor="dpTypeFixed" className="font-normal">Fixed Amount (UZS)</FormLabel>
                             </FormItem>
                           </RadioGroup>
                         </FormControl>
@@ -265,7 +257,7 @@ export function EstateCalcForm() {
                         <FormLabel className="flex items-center"><CalendarDays className="mr-2 h-4 w-4 text-primary" />Installment Months</FormLabel>
                         <Select 
                             onValueChange={(value) => field.onChange(Number(value))} 
-                            value={String(field.value)} // Ensure value is string for Select
+                            value={String(field.value)}
                         >
                           <FormControl><SelectTrigger><SelectValue placeholder="Select months" /></SelectTrigger></FormControl>
                           <SelectContent>
