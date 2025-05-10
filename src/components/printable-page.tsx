@@ -29,38 +29,38 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
         {/* Header */}
         <header className="flex justify-between items-center">
           <Logo className="text-primary h-8 w-8" />
-          <h1 className="text-2xl font-bold text-primary">Apartment Quotation</h1>
+          <h1 className="text-2xl font-bold text-primary">Kvartira Narxnomasi</h1>
         </header>
         <Separator />
 
         {/* Apartment Details */}
         <section>
-          <h2 className="text-lg font-semibold text-primary mb-2">Apartment Details</h2>
+          <h2 className="text-lg font-semibold text-primary mb-2">Kvartira Tafsilotlari</h2>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-            <p><strong>Block:</strong> {formData.apartmentBlock}</p>
-            <p><strong>Floor:</strong> {formData.floor}</p>
-            <p><strong>Apartment No.:</strong> {formData.apartmentNumber}</p>
-            <p><strong>Number of Rooms:</strong> {formData.numberOfRooms}</p>
-            <p><strong>Size:</strong> {formData.sizeSqMeters} sq. meters</p>
+            <p><strong>Blok:</strong> {formData.apartmentBlock}</p>
+            <p><strong>Qavat:</strong> {formData.floor}</p>
+            <p><strong>Kvartira Raqami:</strong> {formData.apartmentNumber}</p>
+            <p><strong>Xonalar Soni:</strong> {formData.numberOfRooms}</p>
+            <p><strong>Hajmi:</strong> {formData.sizeSqMeters} kv. metr</p>
           </div>
         </section>
         <Separator />
 
         {/* Price Breakdown */}
         <section>
-          <h2 className="text-lg font-semibold text-primary mb-2">Price Breakdown</h2>
+          <h2 className="text-lg font-semibold text-primary mb-2">Narxlar Tahlili</h2>
           <Card className="border-primary">
             <CardContent className="p-4 space-y-2">
-              <div className="flex justify-between"><span>Price per sq. meter:</span> <span>{formatCurrency(formData.pricePerSqMeter)}</span></div>
-              <div className="flex justify-between"><span>Total Gross Price:</span> <span>{formatCurrency(calculations.totalPrice)}</span></div>
+              <div className="flex justify-between"><span>Bir kv. metr narxi:</span> <span>{formatCurrency(formData.pricePerSqMeter)}</span></div>
+              <div className="flex justify-between"><span>Jami Yalpi Narx:</span> <span>{formatCurrency(calculations.totalPrice)}</span></div>
               {calculations.discountApplied > 0 && (
                 <div className="flex justify-between text-green-600">
-                  <span>Discount Applied ({calculations.discountPercentageVal}%):</span>
+                  <span>Qo'llanilgan Chegirma ({calculations.discountPercentageVal}%):</span>
                   <span>- {formatCurrency(calculations.discountApplied)}</span>
                 </div>
               )}
               <Separator/>
-              <div className="flex justify-between font-semibold"><span>Total Net Price:</span> <span>{formatCurrency(calculations.totalPriceAfterDiscount)}</span></div>
+              <div className="flex justify-between font-semibold"><span>Jami Sof Narx:</span> <span>{formatCurrency(calculations.totalPriceAfterDiscount)}</span></div>
             </CardContent>
           </Card>
         </section>
@@ -68,21 +68,21 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
 
         {/* Payment Details */}
         <section>
-          <h2 className="text-lg font-semibold text-primary mb-2">Payment Plan</h2>
+          <h2 className="text-lg font-semibold text-primary mb-2">To'lov Rejasi</h2>
            <Card className="border-primary">
             <CardContent className="p-4 space-y-2">
               <div className="flex justify-between">
-                <span>Down Payment:</span>
+                <span>Boshlang'ich To'lov:</span>
                 <span>
                   {formData.downPaymentType === 'percentage'
                     ? `${formData.downPaymentPercentage}% (${formatCurrency(calculations.downPaymentAmount)})`
                     : formatCurrency(calculations.downPaymentAmount)}
                 </span>
               </div>
-              <div className="flex justify-between"><span>Remaining Amount:</span> <span>{formatCurrency(calculations.remainingAmount)}</span></div>
+              <div className="flex justify-between"><span>Qolgan Miqdor:</span> <span>{formatCurrency(calculations.remainingAmount)}</span></div>
               <Separator />
-              <div className="flex justify-between"><span>Number of Installment Months:</span> <span>{formData.installmentMonths}</span></div>
-              <div className="flex justify-between font-semibold"><span>Monthly Installment:</span> <span>{formatCurrency(calculations.monthlyInstallment)}</span></div>
+              <div className="flex justify-between"><span>Bo'lib To'lash Oylari Soni:</span> <span>{formData.installmentMonths}</span></div>
+              <div className="flex justify-between font-semibold"><span>Oylik To'lov:</span> <span>{formatCurrency(calculations.monthlyInstallment)}</span></div>
             </CardContent>
           </Card>
         </section>
@@ -93,7 +93,7 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
         <footer className="mt-auto pt-4 border-t border-border text-xs">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <h3 className="font-semibold mb-1 text-primary">Contact Information</h3>
+              <h3 className="font-semibold mb-1 text-primary">Aloqa Ma'lumotlari</h3>
               <div className="flex items-center space-x-2 mb-1">
                 <Phone size={14} /> <span>+1 (555) 123-4567</span>
               </div>
@@ -106,10 +106,10 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
             </div>
             <div className="flex flex-col items-end justify-center">
               <QrCode size={64} data-ai-hint="company website" className="text-muted-foreground" />
-              <p className="mt-1 text-muted-foreground">Scan for company website</p>
+              <p className="mt-1 text-muted-foreground">Kompaniya veb-sayti uchun skanerlang</p>
             </div>
           </div>
-          <p className="text-center text-muted-foreground mt-4">Thank you for your interest! This quotation is valid for 30 days.</p>
+          <p className="text-center text-muted-foreground mt-4">Qiziqishingiz uchun tashakkur! Ushbu narxnoma 30 kun davomida amal qiladi.</p>
         </footer>
       </div>
     </div>

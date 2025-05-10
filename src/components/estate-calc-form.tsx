@@ -147,8 +147,8 @@ export function EstateCalcForm() {
             <div className="lg:col-span-5 space-y-6">
               <Card className="shadow-xl">
                 <CardHeader>
-                  <CardTitle className="text-2xl text-primary">Property & Payment Details</CardTitle>
-                  <CardDescription>Enter the details to calculate your payment plan.</CardDescription>
+                  <CardTitle className="text-2xl text-primary">Mulk va To'lov Tafsilotlari</CardTitle>
+                  <CardDescription>To'lov rejangizni hisoblash uchun tafsilotlarni kiriting.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -156,8 +156,8 @@ export function EstateCalcForm() {
                     name="apartmentBlock"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center"><Building className="mr-2 h-4 w-4 text-primary" />Apartment Block</FormLabel>
-                        <FormControl><Input placeholder="e.g., A1" {...field} /></FormControl>
+                        <FormLabel className="flex items-center"><Building className="mr-2 h-4 w-4 text-primary" />Kvartira Bloki</FormLabel>
+                        <FormControl><Input placeholder="masalan, A1" {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -168,8 +168,8 @@ export function EstateCalcForm() {
                       name="floor"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center"><Layers className="mr-2 h-4 w-4 text-primary" />Floor</FormLabel>
-                          <FormControl><Input type="number" placeholder="e.g., 2" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                          <FormLabel className="flex items-center"><Layers className="mr-2 h-4 w-4 text-primary" />Qavat</FormLabel>
+                          <FormControl><Input type="number" placeholder="masalan, 2" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -179,8 +179,8 @@ export function EstateCalcForm() {
                       name="apartmentNumber"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center"><DoorOpen className="mr-2 h-4 w-4 text-primary" />Apartment No.</FormLabel>
-                          <FormControl><Input type="number" placeholder="e.g., 204" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                          <FormLabel className="flex items-center"><DoorOpen className="mr-2 h-4 w-4 text-primary" />Kvartira Raqami</FormLabel>
+                          <FormControl><Input type="number" placeholder="masalan, 204" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -192,8 +192,8 @@ export function EstateCalcForm() {
                       name="numberOfRooms"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center"><BedDouble className="mr-2 h-4 w-4 text-primary" />Number of Rooms</FormLabel>
-                          <FormControl><Input type="number" placeholder="e.g., 3" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                          <FormLabel className="flex items-center"><BedDouble className="mr-2 h-4 w-4 text-primary" />Xonalar Soni</FormLabel>
+                          <FormControl><Input type="number" placeholder="masalan, 3" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -203,8 +203,8 @@ export function EstateCalcForm() {
                       name="sizeSqMeters"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center"><Square className="mr-2 h-4 w-4 text-primary" />Size (sq. meters)</FormLabel>
-                          <FormControl><Input type="number" placeholder="e.g., 80" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                          <FormLabel className="flex items-center"><Square className="mr-2 h-4 w-4 text-primary" />Hajmi (kv. metr)</FormLabel>
+                          <FormControl><Input type="number" placeholder="masalan, 80" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -216,8 +216,8 @@ export function EstateCalcForm() {
                     name="pricePerSqMeter"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center"><CircleDollarSign className="mr-2 h-4 w-4 text-primary" />Price per sq. meter</FormLabel>
-                        <FormControl><Input type="number" placeholder="e.g., 500" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                        <FormLabel className="flex items-center"><CircleDollarSign className="mr-2 h-4 w-4 text-primary" />Bir kv. metr narxi</FormLabel>
+                        <FormControl><Input type="number" placeholder="masalan, 500" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -231,7 +231,7 @@ export function EstateCalcForm() {
                     name="downPaymentType"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel className="flex items-center"><Landmark className="mr-2 h-4 w-4 text-primary" />Down Payment Type</FormLabel>
+                        <FormLabel className="flex items-center"><Landmark className="mr-2 h-4 w-4 text-primary" />Boshlang'ich To'lov Turi</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
@@ -240,11 +240,11 @@ export function EstateCalcForm() {
                           >
                             <FormItem className="flex items-center space-x-2 space-y-0">
                               <FormControl><RadioGroupItem value="percentage" id="dpTypePercentage" /></FormControl>
-                              <FormLabel htmlFor="dpTypePercentage" className="font-normal">Percentage (%)</FormLabel>
+                              <FormLabel htmlFor="dpTypePercentage" className="font-normal">Foiz (%)</FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-2 space-y-0">
                               <FormControl><RadioGroupItem value="fixed" id="dpTypeFixed" /></FormControl>
-                              <FormLabel htmlFor="dpTypeFixed" className="font-normal">Fixed Amount (UZS)</FormLabel>
+                              <FormLabel htmlFor="dpTypeFixed" className="font-normal">Qat'iy Miqdor (UZS)</FormLabel>
                             </FormItem>
                           </RadioGroup>
                         </FormControl>
@@ -259,8 +259,8 @@ export function EstateCalcForm() {
                       name="downPaymentPercentage"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Down Payment Percentage</FormLabel>
-                          <FormControl><Input type="number" placeholder="e.g., 30" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                          <FormLabel>Boshlang'ich To'lov Foizi</FormLabel>
+                          <FormControl><Input type="number" placeholder="masalan, 30" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -272,8 +272,8 @@ export function EstateCalcForm() {
                       name="downPaymentFixed"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Down Payment Fixed Amount</FormLabel>
-                          <FormControl><Input type="number" placeholder="e.g., 12000000" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                          <FormLabel>Boshlang'ich To'lovning Qat'iy Miqdori</FormLabel>
+                          <FormControl><Input type="number" placeholder="masalan, 12000000" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -285,16 +285,16 @@ export function EstateCalcForm() {
                     name="installmentMonths"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center"><CalendarDays className="mr-2 h-4 w-4 text-primary" />Installment Months</FormLabel>
+                        <FormLabel className="flex items-center"><CalendarDays className="mr-2 h-4 w-4 text-primary" />Bo'lib To'lash Oylari</FormLabel>
                         <Select 
                             onValueChange={(value) => field.onChange(Number(value))} 
                             value={String(field.value)}
                         >
-                          <FormControl><SelectTrigger><SelectValue placeholder="Select months" /></SelectTrigger></FormControl>
+                          <FormControl><SelectTrigger><SelectValue placeholder="Oylarni tanlang" /></SelectTrigger></FormControl>
                           <SelectContent>
-                            <SelectItem value="12">12 Months</SelectItem>
-                            <SelectItem value="24">24 Months</SelectItem>
-                            <SelectItem value="36">36 Months</SelectItem>
+                            <SelectItem value="12">12 Oy</SelectItem>
+                            <SelectItem value="24">24 Oy</SelectItem>
+                            <SelectItem value="36">36 Oy</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -302,7 +302,7 @@ export function EstateCalcForm() {
                     )}
                   />
                    <Button type="button" onClick={handlePrint} className="w-full no-print mt-6">
-                    <Printer className="mr-2 h-4 w-4" /> Print Quotation
+                    <Printer className="mr-2 h-4 w-4" /> Narxnoma Chop Etish
                   </Button>
                 </CardContent>
               </Card>
@@ -312,8 +312,8 @@ export function EstateCalcForm() {
             <div className="lg:col-span-7 mt-8 lg:mt-0 no-print">
               <Card className="shadow-xl">
                 <CardHeader>
-                  <CardTitle className="text-2xl text-primary">Quotation Preview</CardTitle>
-                  <CardDescription>This is how your printable quotation will look.</CardDescription>
+                  <CardTitle className="text-2xl text-primary">Narxnoma Ko'rinishi</CardTitle>
+                  <CardDescription>Chop etiladigan narxnomangiz shunday ko'rinishda bo'ladi.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-[70vh] w-full rounded-md border border-border p-1 bg-muted/30">

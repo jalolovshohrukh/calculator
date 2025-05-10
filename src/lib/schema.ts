@@ -3,17 +3,17 @@ import { z } from "zod";
 const installmentMonthsValues = [12, 24, 36] as const;
 
 export const apartmentCalcSchema = z.object({
-  apartmentBlock: z.string().min(1, "Apartment block is required."),
-  floor: z.coerce.number({invalid_type_error: "Floor must be a number."}).int().positive("Floor must be a positive number."),
-  apartmentNumber: z.coerce.number({invalid_type_error: "Apartment number must be a number."}).int().positive("Apartment number must be a positive number."),
-  sizeSqMeters: z.coerce.number({invalid_type_error: "Size must be a number."}).positive("Size must be a positive number."),
-  pricePerSqMeter: z.coerce.number({invalid_type_error: "Price must be a number."}).positive("Price per sq. meter must be a positive number."),
-  numberOfRooms: z.coerce.number({invalid_type_error: "Number of rooms must be a number."}).int().positive("Number of rooms must be a positive number."),
-  downPaymentType: z.enum(["percentage", "fixed"], { required_error: "Down payment type is required."}),
-  downPaymentPercentage: z.coerce.number({invalid_type_error: "Percentage must be a number."}).min(0, "Percentage cannot be negative.").max(100, "Percentage cannot exceed 100.").optional(),
-  downPaymentFixed: z.coerce.number({invalid_type_error: "Amount must be a number."}).min(0, "Fixed amount cannot be negative.").optional(),
+  apartmentBlock: z.string().min(1, "Kvartira bloki majburiy."),
+  floor: z.coerce.number({invalid_type_error: "Qavat raqam bo'lishi kerak."}).int().positive("Qavat musbat son bo'lishi kerak."),
+  apartmentNumber: z.coerce.number({invalid_type_error: "Kvartira raqami son bo'lishi kerak."}).int().positive("Kvartira raqami musbat son bo'lishi kerak."),
+  sizeSqMeters: z.coerce.number({invalid_type_error: "Hajmi raqam bo'lishi kerak."}).positive("Hajmi musbat son bo'lishi kerak."),
+  pricePerSqMeter: z.coerce.number({invalid_type_error: "Narx raqam bo'lishi kerak."}).positive("Bir kvadrat metr narxi musbat son bo'lishi kerak."),
+  numberOfRooms: z.coerce.number({invalid_type_error: "Xonalar soni raqam bo'lishi kerak."}).int().positive("Xonalar soni musbat son bo'lishi kerak."),
+  downPaymentType: z.enum(["percentage", "fixed"], { required_error: "Boshlang'ich to'lov turi majburiy."}),
+  downPaymentPercentage: z.coerce.number({invalid_type_error: "Foiz raqam bo'lishi kerak."}).min(0, "Foiz manfiy bo'lishi mumkin emas.").max(100, "Foiz 100 dan oshmasligi kerak.").optional(),
+  downPaymentFixed: z.coerce.number({invalid_type_error: "Miqdor raqam bo'lishi kerak."}).min(0, "Belgilangan miqdor manfiy bo'lishi mumkin emas.").optional(),
   installmentMonths: z.coerce.number().refine((val) => installmentMonthsValues.includes(val as typeof installmentMonthsValues[number]), {
-    message: `Installment months must be one of: ${installmentMonthsValues.join(", ")}.`,
+    message: `Bo'lib to'lash oylari quyidagilardan biri bo'lishi kerak: ${installmentMonthsValues.join(", ")}.`,
   }),
 }).superRefine((data, ctx) => {
   if (data.downPaymentType === "percentage") {
@@ -21,7 +21,7 @@ export const apartmentCalcSchema = z.object({
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["downPaymentPercentage"],
-        message: "Percentage is required and must be a non-negative number.",
+        message: "Foiz majburiy va manfiy bo'lmagan raqam bo'lishi kerak.",
       });
     }
   } else if (data.downPaymentType === "fixed") {
@@ -29,7 +29,7 @@ export const apartmentCalcSchema = z.object({
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["downPaymentFixed"],
-        message: "Fixed amount is required and must be a non-negative number.",
+        message: "Belgilangan miqdor majburiy va manfiy bo'lmagan raqam bo'lishi kerak.",
       });
     }
   }
