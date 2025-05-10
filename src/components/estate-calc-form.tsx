@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ApartmentCalcFormValues } from '@/lib/schema';
@@ -199,7 +200,7 @@ export function EstateCalcForm() {
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
-                            defaultValue={field.value}
+                            value={field.value} // Changed from defaultValue to value
                             className="flex space-x-4"
                           >
                             <FormItem className="flex items-center space-x-2 space-y-0">
@@ -293,3 +294,4 @@ export function EstateCalcForm() {
     </div>
   );
 }
+
