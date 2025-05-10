@@ -63,46 +63,74 @@ export function EstateCalcForm() {
 
     const totalPrice = parsedSize * parsedPrice;
 
-    let dpAmount = 0;
+    // 1. Determine if the intended down payment qualifies for a discount
+    // This is based on the user's selection (percentage of total OR fixed amount)
+    // relative to the original totalPrice.
+    let discount = 0;
+    let discountPercentageVal = 0;
+    let qualifiesFor100PercentDiscount = false;
+    let qualifiesFor50PercentDiscount = false;
+
+    if (watchedDownPaymentType === 'percentage') {
+      const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
+      if (!isNaN(parsedDpPercentage)) {
+        if (parsedDpPercentage >= 100) qualifiesFor100PercentDiscount = true;
+        else if (parsedDpPercentage >= 50) qualifiesFor50PercentDiscount = true;
+      }
+    } else { // 'fixed'
+      const parsedDpFixed = parseFloat(String(downPaymentFixed));
+      if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0 && totalPrice > 0) {
+        if (parsedDpFixed >= totalPrice) qualifiesFor100PercentDiscount = true;
+        else if (parsedDpFixed >= 0.5 * totalPrice) qualifiesFor50PercentDiscount = true;
+      } else if (!isNaN(parsedDpFixed) && parsedDpFixed > 0 && totalPrice === 0) {
+        // If total price is 0, any positive fixed payment is like 100% for discount purposes
+        qualifiesFor100PercentDiscount = true;
+      }
+    }
+
+    if (qualifiesFor100PercentDiscount) {
+      discount = 0.07 * totalPrice;
+      discountPercentageVal = 7;
+    } else if (qualifiesFor50PercentDiscount) {
+      discount = 0.03 * totalPrice;
+      discountPercentageVal = 3;
+    }
+    
+    // 2. Calculate total price after discount
+    const totalPriceAfterDiscount = totalPrice - discount;
+
+    // 3. Calculate the actual down payment amount.
+    // If percentage-based, it's % of totalPriceAfterDiscount.
+    // If fixed, it's the fixed amount (but capped at totalPriceAfterDiscount).
+    let actualDownPaymentAmount = 0;
     if (watchedDownPaymentType === 'percentage') {
       const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
       if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
-        dpAmount = (parsedDpPercentage / 100) * totalPrice;
+        actualDownPaymentAmount = (parsedDpPercentage / 100) * totalPriceAfterDiscount;
       }
-    } else { 
+    } else { // 'fixed'
       const parsedDpFixed = parseFloat(String(downPaymentFixed));
       if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0) {
-        dpAmount = parsedDpFixed;
+        actualDownPaymentAmount = parsedDpFixed;
       }
     }
-    dpAmount = Math.min(dpAmount, totalPrice);
+    // Ensure down payment is not negative and does not exceed the discounted total price
+    actualDownPaymentAmount = Math.max(0, actualDownPaymentAmount);
+    actualDownPaymentAmount = Math.min(actualDownPaymentAmount, totalPriceAfterDiscount);
 
-
-    let discount = 0;
-    let discountPercentageDisplay = 0;
-    const dpPercentageOfTotal = totalPrice > 0 ? (dpAmount / totalPrice) * 100 : 0;
-
-    if (dpPercentageOfTotal === 100) {
-      discount = 0.07 * totalPrice;
-      discountPercentageDisplay = 7;
-    } else if (dpPercentageOfTotal >= 50) {
-      discount = 0.03 * totalPrice;
-      discountPercentageDisplay = 3;
-    }
-    
-    const totalPriceAfterDiscount = totalPrice - discount;
-    const remaining = totalPriceAfterDiscount - dpAmount;
+    // 4. Calculate remaining amount and monthly installment
+    const remainingAmount = totalPriceAfterDiscount - actualDownPaymentAmount;
     const currentInstallmentMonths = Number(watchedInstallmentMonths) || 0;
-    const monthly = currentInstallmentMonths > 0 ? remaining / currentInstallmentMonths : 0;
+    const monthlyInstallment = currentInstallmentMonths > 0 && remainingAmount > 0 ? remainingAmount / currentInstallmentMonths : 0;
 
     setCalculations({
       totalPrice: totalPrice,
       discountApplied: discount,
-      discountPercentageVal: discountPercentageDisplay,
+      discountPercentageVal: discountPercentageVal,
       totalPriceAfterDiscount: totalPriceAfterDiscount,
-      downPaymentAmount: dpAmount,
-      remainingAmount: Math.max(0, remaining),
-      monthlyInstallment: Math.max(0, monthly),
+      downPaymentAmount: actualDownPaymentAmount,
+      remainingAmount: Math.max(0, remainingAmount),
+      monthlyInstallment: Math.max(0, monthlyInstallment),
     });
   }, [
     sizeSqMeters, 
@@ -151,7 +179,7 @@ export function EstateCalcForm() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center"><Layers className="mr-2 h-4 w-4 text-primary" />Floor</FormLabel>
-                          <FormControl><Input type="number" placeholder="e.g., 2" {...field} /></FormControl>
+                          <FormControl><Input type="number" placeholder="e.g., 2" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -162,7 +190,7 @@ export function EstateCalcForm() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center"><DoorOpen className="mr-2 h-4 w-4 text-primary" />Apartment No.</FormLabel>
-                          <FormControl><Input type="number" placeholder="e.g., 204" {...field} /></FormControl>
+                          <FormControl><Input type="number" placeholder="e.g., 204" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -175,7 +203,7 @@ export function EstateCalcForm() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center"><Square className="mr-2 h-4 w-4 text-primary" />Size (sq. meters)</FormLabel>
-                          <FormControl><Input type="number" placeholder="e.g., 80" {...field} /></FormControl>
+                          <FormControl><Input type="number" placeholder="e.g., 80" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -186,7 +214,7 @@ export function EstateCalcForm() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="flex items-center"><CircleDollarSign className="mr-2 h-4 w-4 text-primary" />Price per sq. meter</FormLabel>
-                          <FormControl><Input type="number" placeholder="e.g., 500" {...field} /></FormControl>
+                          <FormControl><Input type="number" placeholder="e.g., 500" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -229,7 +257,7 @@ export function EstateCalcForm() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Down Payment Percentage</FormLabel>
-                          <FormControl><Input type="number" placeholder="e.g., 30" {...field} /></FormControl>
+                          <FormControl><Input type="number" placeholder="e.g., 30" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -242,7 +270,7 @@ export function EstateCalcForm() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Down Payment Fixed Amount</FormLabel>
-                          <FormControl><Input type="number" placeholder="e.g., 12000" {...field} /></FormControl>
+                          <FormControl><Input type="number" placeholder="e.g., 12000000" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
