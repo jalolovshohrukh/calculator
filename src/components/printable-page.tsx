@@ -105,7 +105,7 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
               </div>
             </div>
             <div className="flex flex-col items-end justify-center">
-              <QrCode size={64} data-ai-hint="company website" className="text-muted-foreground" />
+              <QrCode size={64} data-ai-hint="cityparkdenou website" className="text-muted-foreground" />
               <p className="mt-1 text-muted-foreground">Kompaniya veb-sayti uchun skanerlang</p>
             </div>
           </div>
@@ -115,3 +115,4 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
     </div>
   );
 }
+
