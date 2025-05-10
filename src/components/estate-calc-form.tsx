@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { ApartmentCalcFormValues } from '@/lib/schema';
@@ -67,33 +66,35 @@ export function EstateCalcForm() {
     let discount = 0;
     let discountPercentageVal = 0;
     
-    // Calculate discount based on the *intended* down payment amount (before discount is applied to total price)
-    let intendedDownPaymentRatio = 0;
+    // Determine the intended down payment percentage relative to the original total price
+    // to calculate the discount percentage.
+    let intendedDownPaymentRatioForDiscountCalc = 0;
     if (watchedDownPaymentType === 'percentage') {
-      const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
-      if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
-        intendedDownPaymentRatio = parsedDpPercentage / 100;
-      }
+        const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
+        if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
+            intendedDownPaymentRatioForDiscountCalc = parsedDpPercentage / 100;
+        }
     } else { // 'fixed'
-      const parsedDpFixed = parseFloat(String(downPaymentFixed));
-      if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0 && totalPrice > 0) {
-        intendedDownPaymentRatio = parsedDpFixed / totalPrice;
-      } else if (!isNaN(parsedDpFixed) && parsedDpFixed >=0 && totalPrice === 0) {
-        // If total price is 0, any positive fixed payment is like 100% for discount purposes
-        intendedDownPaymentRatio = 1;
-      }
+        const parsedDpFixed = parseFloat(String(downPaymentFixed));
+        if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0 && totalPrice > 0) {
+            intendedDownPaymentRatioForDiscountCalc = parsedDpFixed / totalPrice;
+        } else if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0 && totalPrice === 0) {
+             // If total price is 0, any positive fixed payment is like 100% for discount purposes
+            intendedDownPaymentRatioForDiscountCalc = 1;
+        }
     }
     
-    if (intendedDownPaymentRatio >= 1) { // 100% or more of original price
-      discount = 0.07 * totalPrice;
+    if (intendedDownPaymentRatioForDiscountCalc >= 1) { // 100% or more of original price
+      discount = 0.07 * totalPrice; // 7% discount on original total price
       discountPercentageVal = 7;
-    } else if (intendedDownPaymentRatio >= 0.5) { // 50% to 99.99% of original price
-      discount = 0.03 * totalPrice;
+    } else if (intendedDownPaymentRatioForDiscountCalc >= 0.5) { // 50% to 99.99% of original price
+      discount = 0.03 * totalPrice; // 3% discount on original total price
       discountPercentageVal = 3;
     }
     
     const totalPriceAfterDiscount = totalPrice - discount;
 
+    // Now calculate the actual down payment amount based on the totalPriceAfterDiscount
     let actualDownPaymentAmount = 0;
     if (watchedDownPaymentType === 'percentage') {
       const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
@@ -106,8 +107,10 @@ export function EstateCalcForm() {
         actualDownPaymentAmount = parsedDpFixed;
       }
     }
+    // Ensure down payment is not negative and not more than the discounted price
     actualDownPaymentAmount = Math.max(0, actualDownPaymentAmount);
     actualDownPaymentAmount = Math.min(actualDownPaymentAmount, totalPriceAfterDiscount);
+
 
     const remainingAmount = totalPriceAfterDiscount - actualDownPaymentAmount;
     const currentInstallmentMonths = Number(watchedInstallmentMonths) || 0;
@@ -216,8 +219,8 @@ export function EstateCalcForm() {
                     name="pricePerSqMeter"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center"><CircleDollarSign className="mr-2 h-4 w-4 text-primary" />Bir kv. metr narxi</FormLabel>
-                        <FormControl><Input type="number" placeholder="masalan, 500" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                        <FormLabel className="flex items-center"><CircleDollarSign className="mr-2 h-4 w-4 text-primary" />Bir kv. metr narxi (UZS)</FormLabel>
+                        <FormControl><Input type="number" placeholder="masalan, 5000000" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -272,8 +275,8 @@ export function EstateCalcForm() {
                       name="downPaymentFixed"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Boshlang'ich To'lovning Qat'iy Miqdori</FormLabel>
-                          <FormControl><Input type="number" placeholder="masalan, 12000000" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                          <FormLabel>Boshlang'ich To'lovning Qat'iy Miqdori (UZS)</FormLabel>
+                          <FormControl><Input type="number" placeholder="masalan, 120000000" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -316,8 +319,10 @@ export function EstateCalcForm() {
                   <CardDescription>Chop etiladigan narxnomangiz shunday ko'rinishda bo'ladi.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[70vh] w-full rounded-md border border-border p-1 bg-muted/30">
-                     <PrintablePage formData={form.getValues()} calculations={calculations} />
+                  <ScrollArea className="h-[50vh] sm:h-[60vh] lg:h-[70vh] w-full rounded-md border border-border bg-muted/30">
+                    <div className="p-2 sm:p-4 flex justify-center items-start"> {/* Added wrapper for padding and centering */}
+                      <PrintablePage formData={form.getValues()} calculations={calculations} />
+                    </div>
                   </ScrollArea>
                 </CardContent>
               </Card>
