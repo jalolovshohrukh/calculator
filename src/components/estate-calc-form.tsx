@@ -35,7 +35,7 @@ export function EstateCalcForm() {
       floor: 1,
       apartmentNumber: 101,
       sizeSqMeters: 80,
-      pricePerSqMeter: 5000000, // Changed to a more realistic UZS value
+      pricePerSqMeter: 5000000, 
       numberOfRooms: 3,
       downPaymentType: 'percentage',
       downPaymentPercentage: 30,
@@ -67,46 +67,43 @@ export function EstateCalcForm() {
     let discount = 0;
     let discountPercentageVal = 0;
     
-    // Calculate potential down payment amount based on *original total price* to determine discount tier
     let potentialDownPaymentForDiscountTier = 0;
     if (watchedDownPaymentType === 'percentage') {
         const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
         if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
             potentialDownPaymentForDiscountTier = (parsedDpPercentage / 100) * totalPrice;
         }
-    } else { // 'fixed'
+    } else { 
         const parsedDpFixed = parseFloat(String(downPaymentFixed));
         if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0) {
             potentialDownPaymentForDiscountTier = parsedDpFixed;
         }
     }
     
-    if (totalPrice > 0) { // Ensure totalPrice is not zero to avoid division by zero or incorrect ratios
-        if (potentialDownPaymentForDiscountTier >= totalPrice) { // 100% or more of original price
-            discount = 0.07 * totalPrice; // 7% discount on original total price
+    if (totalPrice > 0) { 
+        if (potentialDownPaymentForDiscountTier >= totalPrice) { 
+            discount = 0.07 * totalPrice; 
             discountPercentageVal = 7;
-        } else if (potentialDownPaymentForDiscountTier >= 0.5 * totalPrice) { // 50% to 99.99% of original price
-            discount = 0.03 * totalPrice; // 3% discount on original total price
+        } else if (potentialDownPaymentForDiscountTier >= 0.5 * totalPrice) { 
+            discount = 0.03 * totalPrice; 
             discountPercentageVal = 3;
         }
     }
     
     const totalPriceAfterDiscount = totalPrice - discount;
 
-    // Now calculate the actual down payment amount based on the totalPriceAfterDiscount
     let actualDownPaymentAmount = 0;
     if (watchedDownPaymentType === 'percentage') {
       const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
       if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
         actualDownPaymentAmount = (parsedDpPercentage / 100) * totalPriceAfterDiscount;
       }
-    } else { // 'fixed'
+    } else { 
       const parsedDpFixed = parseFloat(String(downPaymentFixed));
       if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0) {
         actualDownPaymentAmount = parsedDpFixed;
       }
     }
-    // Ensure down payment is not negative and not more than the discounted price
     actualDownPaymentAmount = Math.max(0, actualDownPaymentAmount);
     actualDownPaymentAmount = Math.min(actualDownPaymentAmount, totalPriceAfterDiscount);
 
@@ -146,7 +143,7 @@ export function EstateCalcForm() {
         <form onSubmit={form.handleSubmit(() => {})} className="space-y-8">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
             {/* Form Inputs Column */}
-            <div className="lg:col-span-4 space-y-6">
+            <div className="lg:col-span-3 space-y-6">
               <Card className="shadow-xl">
                 <CardHeader>
                   <CardTitle className="text-2xl text-primary">Mulk va To'lov Tafsilotlari</CardTitle>
@@ -311,15 +308,15 @@ export function EstateCalcForm() {
             </div>
 
             {/* Preview Column */}
-            <div className="lg:col-span-8 mt-8 lg:mt-0 no-print">
+            <div className="lg:col-span-9 mt-8 lg:mt-0 no-print">
               <Card className="shadow-xl">
                 <CardHeader>
                   <CardTitle className="text-2xl text-primary">Narxnoma Ko'rinishi</CardTitle>
                   <CardDescription>Chop etiladigan narxnomangiz shunday ko'rinishda bo'ladi.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-[50vh] sm:h-[60vh] lg:h-[70vh] w-full rounded-md border border-border bg-muted/30">
-                    <div className="p-2 sm:p-4"> 
+                  <ScrollArea className="h-[calc(100vh-250px)] w-full rounded-md border border-border bg-muted/30">
+                    <div className="p-1 sm:p-2 md:p-4"> 
                       <PrintablePage formData={form.getValues()} calculations={calculations} />
                     </div>
                   </ScrollArea>
@@ -336,5 +333,3 @@ export function EstateCalcForm() {
     </div>
   );
 }
-
-    
