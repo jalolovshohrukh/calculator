@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({ // Corrected instantiation
 });
 
 export const metadata: Metadata = {
-  title: 'Firebase Studio tomonidan EstateCalc',
-  description: 'Firebase Studio tomonidan yaratilgan Kvartira Narxlari Kalkulyatori',
+  title: 'City Park Residence',
+  description: 'CityPark — a modern residential complex in Denov',
 };
 
 export default function RootLayout({
