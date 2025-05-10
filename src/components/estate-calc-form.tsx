@@ -145,7 +145,7 @@ export function EstateCalcForm() {
     <div className="container mx-auto p-4 lg:p-8">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(() => {})} className="space-y-8">
-          <div className="lg:grid lg:grid-cols-12 lg:gap-8">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-9">
             {/* Form Inputs Column */}
             <div className="lg:col-span-4 space-y-6"> {/* Changed from lg:col-span-3 */}
               <Card className="shadow-xl">

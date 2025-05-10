@@ -29,7 +29,7 @@ const formatCurrency = (amount: number) => {
 export function PrintablePage({ formData, calculations }: PrintablePageProps) {
   return (
     <div id="printable-area" className="bg-card text-card-foreground shadow-lg print:shadow-none">
-      <div className="w-[210mm] min-h-[297mm] p-[1cm] mx-auto flex flex-col space-y-6 text-sm">
+      <div className="w-[190mm] min-h-[300mm] p-[2cm] mx-auto flex flex-col space-y-6 text-sm">
         {/* Header */}
         <header className="flex justify-between items-center">
           <Logo className="text-primary h-8 w-8" />
