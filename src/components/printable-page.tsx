@@ -1,3 +1,4 @@
+
 import type { ApartmentCalcFormValues } from '@/lib/schema';
 import { Logo } from '@/components/logo';
 import { Separator } from '@/components/ui/separator';
@@ -18,7 +19,7 @@ interface PrintablePageProps {
 }
 
 const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'UZS' }).format(amount);
+  return new Intl.NumberFormat('uz-UZ', { style: 'currency', currency: 'UZS', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
 };
 
 export function PrintablePage({ formData, calculations }: PrintablePageProps) {
@@ -39,6 +40,7 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
             <p><strong>Block:</strong> {formData.apartmentBlock}</p>
             <p><strong>Floor:</strong> {formData.floor}</p>
             <p><strong>Apartment No.:</strong> {formData.apartmentNumber}</p>
+            <p><strong>Number of Rooms:</strong> {formData.numberOfRooms}</p>
             <p><strong>Size:</strong> {formData.sizeSqMeters} sq. meters</p>
           </div>
         </section>

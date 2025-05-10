@@ -14,7 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { PrintablePage } from '@/components/printable-page';
 import { Separator } from '@/components/ui/separator';
-import { Building, Layers, DoorOpen, Square, CircleDollarSign, Landmark, CalendarDays, Printer } from 'lucide-react';
+import { Building, Layers, DoorOpen, Square, CircleDollarSign, Landmark, CalendarDays, Printer, BedDouble } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 
 const initialCalculations = {
@@ -36,6 +36,7 @@ export function EstateCalcForm() {
       apartmentNumber: 101,
       sizeSqMeters: 80,
       pricePerSqMeter: 500,
+      numberOfRooms: 3,
       downPaymentType: 'percentage',
       downPaymentPercentage: 30,
       installmentMonths: 12,
@@ -63,45 +64,36 @@ export function EstateCalcForm() {
 
     const totalPrice = parsedSize * parsedPrice;
 
-    // 1. Determine if the intended down payment qualifies for a discount
-    // This is based on the user's selection (percentage of total OR fixed amount)
-    // relative to the original totalPrice.
     let discount = 0;
     let discountPercentageVal = 0;
-    let qualifiesFor100PercentDiscount = false;
-    let qualifiesFor50PercentDiscount = false;
-
+    
+    // Calculate discount based on the *intended* down payment amount (before discount is applied to total price)
+    let intendedDownPaymentRatio = 0;
     if (watchedDownPaymentType === 'percentage') {
       const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
-      if (!isNaN(parsedDpPercentage)) {
-        if (parsedDpPercentage >= 100) qualifiesFor100PercentDiscount = true;
-        else if (parsedDpPercentage >= 50) qualifiesFor50PercentDiscount = true;
+      if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
+        intendedDownPaymentRatio = parsedDpPercentage / 100;
       }
     } else { // 'fixed'
       const parsedDpFixed = parseFloat(String(downPaymentFixed));
       if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0 && totalPrice > 0) {
-        if (parsedDpFixed >= totalPrice) qualifiesFor100PercentDiscount = true;
-        else if (parsedDpFixed >= 0.5 * totalPrice) qualifiesFor50PercentDiscount = true;
-      } else if (!isNaN(parsedDpFixed) && parsedDpFixed > 0 && totalPrice === 0) {
+        intendedDownPaymentRatio = parsedDpFixed / totalPrice;
+      } else if (!isNaN(parsedDpFixed) && parsedDpFixed >=0 && totalPrice === 0) {
         // If total price is 0, any positive fixed payment is like 100% for discount purposes
-        qualifiesFor100PercentDiscount = true;
+        intendedDownPaymentRatio = 1;
       }
     }
-
-    if (qualifiesFor100PercentDiscount) {
+    
+    if (intendedDownPaymentRatio >= 1) { // 100% or more of original price
       discount = 0.07 * totalPrice;
       discountPercentageVal = 7;
-    } else if (qualifiesFor50PercentDiscount) {
+    } else if (intendedDownPaymentRatio >= 0.5) { // 50% to 99.99% of original price
       discount = 0.03 * totalPrice;
       discountPercentageVal = 3;
     }
     
-    // 2. Calculate total price after discount
     const totalPriceAfterDiscount = totalPrice - discount;
 
-    // 3. Calculate the actual down payment amount.
-    // If percentage-based, it's % of totalPriceAfterDiscount.
-    // If fixed, it's the fixed amount (but capped at totalPriceAfterDiscount).
     let actualDownPaymentAmount = 0;
     if (watchedDownPaymentType === 'percentage') {
       const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
@@ -114,11 +106,9 @@ export function EstateCalcForm() {
         actualDownPaymentAmount = parsedDpFixed;
       }
     }
-    // Ensure down payment is not negative and does not exceed the discounted total price
     actualDownPaymentAmount = Math.max(0, actualDownPaymentAmount);
     actualDownPaymentAmount = Math.min(actualDownPaymentAmount, totalPriceAfterDiscount);
 
-    // 4. Calculate remaining amount and monthly installment
     const remainingAmount = totalPriceAfterDiscount - actualDownPaymentAmount;
     const currentInstallmentMonths = Number(watchedInstallmentMonths) || 0;
     const monthlyInstallment = currentInstallmentMonths > 0 && remainingAmount > 0 ? remainingAmount / currentInstallmentMonths : 0;
@@ -196,8 +186,19 @@ export function EstateCalcForm() {
                       )}
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                   <div className="grid grid-cols-2 gap-4">
                     <FormField
+                      control={form.control}
+                      name="numberOfRooms"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center"><BedDouble className="mr-2 h-4 w-4 text-primary" />Number of Rooms</FormLabel>
+                          <FormControl><Input type="number" placeholder="e.g., 3" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                     <FormField
                       control={form.control}
                       name="sizeSqMeters"
                       render={({ field }) => (
@@ -208,18 +209,20 @@ export function EstateCalcForm() {
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="pricePerSqMeter"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="flex items-center"><CircleDollarSign className="mr-2 h-4 w-4 text-primary" />Price per sq. meter</FormLabel>
-                          <FormControl><Input type="number" placeholder="e.g., 500" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </div>
+
+                  <FormField
+                    control={form.control}
+                    name="pricePerSqMeter"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center"><CircleDollarSign className="mr-2 h-4 w-4 text-primary" />Price per sq. meter</FormLabel>
+                        <FormControl><Input type="number" placeholder="e.g., 500" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                 
 
                   <Separator />
 

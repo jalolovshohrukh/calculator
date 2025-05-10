@@ -8,6 +8,7 @@ export const apartmentCalcSchema = z.object({
   apartmentNumber: z.coerce.number({invalid_type_error: "Apartment number must be a number."}).int().positive("Apartment number must be a positive number."),
   sizeSqMeters: z.coerce.number({invalid_type_error: "Size must be a number."}).positive("Size must be a positive number."),
   pricePerSqMeter: z.coerce.number({invalid_type_error: "Price must be a number."}).positive("Price per sq. meter must be a positive number."),
+  numberOfRooms: z.coerce.number({invalid_type_error: "Number of rooms must be a number."}).int().positive("Number of rooms must be a positive number."),
   downPaymentType: z.enum(["percentage", "fixed"], { required_error: "Down payment type is required."}),
   downPaymentPercentage: z.coerce.number({invalid_type_error: "Percentage must be a number."}).min(0, "Percentage cannot be negative.").max(100, "Percentage cannot exceed 100.").optional(),
   downPaymentFixed: z.coerce.number({invalid_type_error: "Amount must be a number."}).min(0, "Fixed amount cannot be negative.").optional(),
