@@ -28,6 +28,9 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
+    --success: 155 100% 34%; /* #00AF66 */
+    --success-foreground: 0 0% 100%; /* White */
+
     --border: 210 20% 80%; /* Slightly darker Light Cool Gray */
     --input: 210 20% 80%; /* Border color for inputs */
     --ring: 180 100% 30%; /* Teal for focus rings */
@@ -74,6 +77,9 @@
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
+
+    --success: 155 90% 40%; /* Adjusted #00AF66 for dark mode */
+    --success-foreground: 0 0% 100%; /* White */
 
     --border: 220 20% 30%; /* Darker Border */
     --input: 220 20% 30%; /* Darker Input Border */

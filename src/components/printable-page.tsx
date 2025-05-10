@@ -54,7 +54,7 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
               <div className="flex justify-between"><span>Bir kv. metr narxi:</span> <span>{formatCurrency(formData.pricePerSqMeter)}</span></div>
               <div className="flex justify-between"><span>Jami Yalpi Narx:</span> <span>{formatCurrency(calculations.totalPrice)}</span></div>
               {calculations.discountApplied > 0 && (
-                <div className="flex justify-between text-green-600">
+                <div className="flex justify-between text-success">
                   <span>Qo'llanilgan Chegirma ({calculations.discountPercentageVal}%):</span>
                   <span>- {formatCurrency(calculations.discountApplied)}</span>
                 </div>
@@ -115,4 +115,3 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
     </div>
   );
 }
-
