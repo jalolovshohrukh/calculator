@@ -68,23 +68,26 @@ export function EstateCalcForm() {
     let discountPercentageVal = 0;
     
     let potentialDownPaymentForDiscountTier = 0;
+    // Calculate potential down payment based on type *before* discount for discount tier evaluation
     if (watchedDownPaymentType === 'percentage') {
         const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
         if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
-            potentialDownPaymentForDiscountTier = (parsedDpPercentage / 100) * totalPrice;
+            // Discount tier based on percentage of *original* total price
+            potentialDownPaymentForDiscountTier = (parsedDpPercentage / 100) * totalPrice; 
         }
     } else { 
         const parsedDpFixed = parseFloat(String(downPaymentFixed));
         if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0) {
+            // Discount tier based on fixed amount
             potentialDownPaymentForDiscountTier = parsedDpFixed;
         }
     }
     
     if (totalPrice > 0) { 
-        if (potentialDownPaymentForDiscountTier >= totalPrice) { 
+        if (potentialDownPaymentForDiscountTier >= totalPrice) { // If down payment covers full original price
             discount = 0.07 * totalPrice; 
             discountPercentageVal = 7;
-        } else if (potentialDownPaymentForDiscountTier >= 0.5 * totalPrice) { 
+        } else if (potentialDownPaymentForDiscountTier >= 0.5 * totalPrice) { // If down payment covers 50% of original price
             discount = 0.03 * totalPrice; 
             discountPercentageVal = 3;
         }
@@ -93,6 +96,7 @@ export function EstateCalcForm() {
     const totalPriceAfterDiscount = totalPrice - discount;
 
     let actualDownPaymentAmount = 0;
+    // Calculate actual down payment amount based on *totalPriceAfterDiscount*
     if (watchedDownPaymentType === 'percentage') {
       const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
       if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
@@ -143,7 +147,7 @@ export function EstateCalcForm() {
         <form onSubmit={form.handleSubmit(() => {})} className="space-y-8">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
             {/* Form Inputs Column */}
-            <div className="lg:col-span-3 space-y-6">
+            <div className="lg:col-span-4 space-y-6"> {/* Changed from lg:col-span-3 */}
               <Card className="shadow-xl">
                 <CardHeader>
                   <CardTitle className="text-2xl text-primary">Mulk va To'lov Tafsilotlari</CardTitle>
@@ -308,7 +312,7 @@ export function EstateCalcForm() {
             </div>
 
             {/* Preview Column */}
-            <div className="lg:col-span-9 mt-8 lg:mt-0 no-print">
+            <div className="lg:col-span-8 mt-8 lg:mt-0 no-print"> {/* Changed from lg:col-span-9 */}
               <Card className="shadow-xl">
                 <CardHeader>
                   <CardTitle className="text-2xl text-primary">Narxnoma Ko'rinishi</CardTitle>
@@ -316,7 +320,7 @@ export function EstateCalcForm() {
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-[calc(100vh-250px)] w-full rounded-md border border-border bg-muted/30">
-                    <div className="p-1 sm:p-2 md:p-4"> 
+                    <div className="p-1 sm:p-2 md:p-4 min-w-[210mm]"> {/* Ensured min-width for scrollable content */}
                       <PrintablePage formData={form.getValues()} calculations={calculations} />
                     </div>
                   </ScrollArea>
@@ -333,3 +337,4 @@ export function EstateCalcForm() {
     </div>
   );
 }
+
