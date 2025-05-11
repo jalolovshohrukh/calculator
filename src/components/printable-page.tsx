@@ -33,7 +33,7 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
         {/* Header */}
         <header className="flex justify-between items-center">
           <Logo className="text-primary h-8 w-8" />
-          <h1 className="text-2xl font-bold text-primary">Kvartira Narxnomasi</h1>
+          <h1 className="text-2xl font-semibold text-primary">Kvartira Narxnomasi</h1>
         </header>
         <Separator />
 
