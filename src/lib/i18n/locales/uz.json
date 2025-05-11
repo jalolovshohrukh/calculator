@@ -14,14 +14,14 @@
   "numberOfRoomsPlaceholder": "masalan, 3",
   "sizeSqMetersLabel": "Hajmi (kv. metr)",
   "sizeSqMetersPlaceholder": "masalan, 80",
-  "pricePerSqMeterLabel": "Bir kv. metr narxi (UZS)",
+  "pricePerSqMeterLabel": "Bir kv. metr narxi",
   "pricePerSqMeterPlaceholder": "masalan, 5000000",
   "downPaymentTypeLabel": "Boshlang'ich To'lov Turi",
   "downPaymentTypePercentage": "Foiz (%)",
-  "downPaymentTypeFixed": "Qat'iy Miqdor (UZS)",
+  "downPaymentTypeFixed": "Qat'iy Miqdor",
   "downPaymentPercentageLabel": "Boshlang'ich To'lov Foizi",
   "downPaymentPercentagePlaceholder": "masalan, 30",
-  "downPaymentFixedLabel": "Boshlang'ich To'lovning Qat'iy Miqdori (UZS)",
+  "downPaymentFixedLabel": "Boshlang'ich To'lovning Qat'iy Miqdori",
   "downPaymentFixedPlaceholder": "masalan, 120000000",
   "installmentMonthsLabel": "Bo'lib To'lash Oylari",
   "selectMonthsPlaceholder": "Oylarni tanlang",
@@ -50,5 +50,6 @@
   "monthlyInstallmentLabel": "Oylik To'lov",
   "contactInfoTitle": "Aloqa Ma'lumotlari",
   "scanForWebsiteText": "Kompaniya veb-sayti uchun skanerlang",
-  "languageSwitcherLabel": "Tilni tanlang"
+  "languageSwitcherLabel": "Tilni tanlang",
+  "currencySwitcherLabel": "Valyutani tanlang"
 }

@@ -14,14 +14,14 @@
   "numberOfRoomsPlaceholder": "e.g., 3",
   "sizeSqMetersLabel": "Size (sq. meters)",
   "sizeSqMetersPlaceholder": "e.g., 80",
-  "pricePerSqMeterLabel": "Price per sq. meter (UZS)",
+  "pricePerSqMeterLabel": "Price per sq. meter",
   "pricePerSqMeterPlaceholder": "e.g., 5000000",
   "downPaymentTypeLabel": "Down Payment Type",
   "downPaymentTypePercentage": "Percentage (%)",
-  "downPaymentTypeFixed": "Fixed Amount (UZS)",
+  "downPaymentTypeFixed": "Fixed Amount",
   "downPaymentPercentageLabel": "Down Payment Percentage",
   "downPaymentPercentagePlaceholder": "e.g., 30",
-  "downPaymentFixedLabel": "Fixed Down Payment Amount (UZS)",
+  "downPaymentFixedLabel": "Fixed Down Payment Amount",
   "downPaymentFixedPlaceholder": "e.g., 120000000",
   "installmentMonthsLabel": "Installment Months",
   "selectMonthsPlaceholder": "Select months",
@@ -50,5 +50,6 @@
   "monthlyInstallmentLabel": "Monthly Installment",
   "contactInfoTitle": "Contact Information",
   "scanForWebsiteText": "Scan for company website",
-  "languageSwitcherLabel": "Select Language"
+  "languageSwitcherLabel": "Select Language",
+  "currencySwitcherLabel": "Select Currency"
 }

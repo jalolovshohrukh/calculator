@@ -1,7 +1,7 @@
 
 {
-  "appTitle": "[RU] City Park Residence",
-  "appDescription": "[RU] CityPark — a modern residential complex in Denov",
+  "appTitle": "City Park Residence",
+  "appDescription": "CityPark — современный жилой комплекс в Денау",
   "formTitle": "Детали недвижимости и оплаты",
   "formDescription": "Введите данные для расчета вашего плана платежей.",
   "apartmentBlockLabel": "Жилой блок",
@@ -14,14 +14,14 @@
   "numberOfRoomsPlaceholder": "например, 3",
   "sizeSqMetersLabel": "Площадь (кв. м)",
   "sizeSqMetersPlaceholder": "например, 80",
-  "pricePerSqMeterLabel": "Цена за кв. м (UZS)",
+  "pricePerSqMeterLabel": "Цена за кв. м",
   "pricePerSqMeterPlaceholder": "например, 5000000",
   "downPaymentTypeLabel": "Тип первоначального взноса",
   "downPaymentTypePercentage": "Процент (%)",
-  "downPaymentTypeFixed": "Фиксированная сумма (UZS)",
+  "downPaymentTypeFixed": "Фиксированная сумма",
   "downPaymentPercentageLabel": "Процент первоначального взноса",
   "downPaymentPercentagePlaceholder": "например, 30",
-  "downPaymentFixedLabel": "Фиксированная сумма первоначального взноса (UZS)",
+  "downPaymentFixedLabel": "Фиксированная сумма первоначального взноса",
   "downPaymentFixedPlaceholder": "например, 120000000",
   "installmentMonthsLabel": "Месяцы рассрочки",
   "selectMonthsPlaceholder": "Выберите месяцы",
@@ -50,5 +50,6 @@
   "monthlyInstallmentLabel": "Ежемесячный платеж",
   "contactInfoTitle": "Контактная информация",
   "scanForWebsiteText": "Сканируйте QR-код для перехода на сайт компании",
-  "languageSwitcherLabel": "Выберите язык"
+  "languageSwitcherLabel": "Выберите язык",
+  "currencySwitcherLabel": "Выберите валюту"
 }

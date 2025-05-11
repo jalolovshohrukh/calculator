@@ -25,17 +25,25 @@ const allTranslations: Record<Locale, Translations> = {
   tg: tgTranslations,
 };
 
+export const supportedCurrencies = ['UZS', 'USD', 'RUB', 'TJS'] as const;
+export type Currency = typeof supportedCurrencies[number];
+export const defaultCurrency: Currency = 'UZS';
+
+
 interface I18nContextType {
   locale: Locale;
   setLocale: (locale: Locale) => void;
+  currency: Currency;
+  setCurrency: (currency: Currency) => void;
   t: (key: TranslationKey, params?: Record<string, string | number>) => string;
-  formatCurrency: (amount: number, currency?: string) => string;
+  formatCurrency: (amount: number, currencyOverride?: Currency) => string;
 }
 
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
   const [locale, setLocaleState] = useState<Locale>(defaultLocale);
+  const [currency, setCurrencyState] = useState<Currency>(defaultCurrency);
 
   useEffect(() => {
     // Ensure document is defined (client-side)
@@ -48,6 +56,13 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
     if (locales.includes(newLocale)) {
       setLocaleState(newLocale);
       // Optionally, persist locale to localStorage or cookies here
+    }
+  };
+
+  const setCurrency = (newCurrency: Currency) => {
+    if (supportedCurrencies.includes(newCurrency)) {
+      setCurrencyState(newCurrency);
+      // Optionally, persist currency to localStorage or cookies here
     }
   };
 
@@ -103,7 +118,8 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const formatCurrency = (amount: number, currency: string = 'UZS'): string => {
+  const formatCurrency = (amount: number, currencyOverride?: Currency): string => {
+    const currencyToUse = currencyOverride || currency;
     let targetLocaleForFormatting: string;
     switch (locale) {
         case 'en': targetLocaleForFormatting = 'en-US'; break;
@@ -113,12 +129,12 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
         default: targetLocaleForFormatting = 'en-US';
     }
 
-    const fractionDigitsConfig = getFractionDigitsConfig(currency);
+    const fractionDigitsConfig = getFractionDigitsConfig(currencyToUse);
 
     try {
         return new Intl.NumberFormat(targetLocaleForFormatting, { 
             style: 'currency', 
-            currency: currency, 
+            currency: currencyToUse, 
             ...fractionDigitsConfig
         }).format(amount);
     } catch (e) {
@@ -128,12 +144,12 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
             minimumFractionDigits: fractionDigitsConfig.minimumFractionDigits,
             maximumFractionDigits: fractionDigitsConfig.maximumFractionDigits,
         });
-        return `${currency} ${formattedAmount}`;
+        return `${currencyToUse} ${formattedAmount}`;
     }
   };
 
   return (
-    <I18nContext.Provider value={{ locale, setLocale, t, formatCurrency }}>
+    <I18nContext.Provider value={{ locale, setLocale, currency, setCurrency, t, formatCurrency }}>
       {children}
     </I18nContext.Provider>
   );
@@ -146,4 +162,3 @@ export const useI18n = (): I18nContextType => {
   }
   return context;
 };
-

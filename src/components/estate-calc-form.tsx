@@ -16,8 +16,10 @@ import { PrintablePage } from '@/components/printable-page';
 import { Separator } from '@/components/ui/separator';
 import { Building, Layers, DoorOpen, Square, CircleDollarSign, Landmark, CalendarDays, Printer, BedDouble } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
-import { useI18n } from '@/lib/i18n'; // Import useI18n
-import { LanguageSwitcher } from './language-switcher'; // Import LanguageSwitcher
+import { useI18n } from '@/lib/i18n'; 
+import { LanguageSwitcher } from './language-switcher'; 
+import { CurrencySwitcher } from './currency-switcher';
+
 
 const initialCalculations = {
   totalPrice: 0,
@@ -30,9 +32,9 @@ const initialCalculations = {
 };
 
 export function EstateCalcForm() {
-  const { t, locale } = useI18n(); // Get t function and current locale
+  const { t, locale, currency } = useI18n(); 
   const form = useForm<ApartmentCalcFormValues>({
-    resolver: zodResolver(apartmentCalcSchema), // Zod validation messages are not yet translated
+    resolver: zodResolver(apartmentCalcSchema), 
     defaultValues: {
       apartmentBlock: 'A1',
       floor: 1,
@@ -55,12 +57,6 @@ export function EstateCalcForm() {
   const downPaymentFixed = form.watch("downPaymentFixed");
   const watchedInstallmentMonths = form.watch("installmentMonths");
 
-  // Re-run resolver when locale changes if Zod messages were localized
-  // useEffect(() => {
-  //   form.trigger(); // This could re-trigger validation if messages depend on locale
-  // }, [locale, form]);
-
-
   useEffect(() => {
     const parsedSize = parseFloat(String(sizeSqMeters));
     const parsedPrice = parseFloat(String(pricePerSqMeter));
@@ -76,6 +72,7 @@ export function EstateCalcForm() {
     let discountPercentageVal = 0;
     
     let potentialDownPaymentForDiscountTier = 0;
+    // Calculate potential down payment based on the TOTAL price *before* discount for discount tier evaluation
     if (watchedDownPaymentType === 'percentage') {
         const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
         if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
@@ -89,10 +86,10 @@ export function EstateCalcForm() {
     }
     
     if (totalPrice > 0) { 
-        if (potentialDownPaymentForDiscountTier >= totalPrice) {
+        if (potentialDownPaymentForDiscountTier >= totalPrice) { // 100% down payment
             discount = 0.07 * totalPrice; 
             discountPercentageVal = 7;
-        } else if (potentialDownPaymentForDiscountTier >= 0.5 * totalPrice) {
+        } else if (potentialDownPaymentForDiscountTier >= 0.5 * totalPrice) { // 50% or more down payment
             discount = 0.03 * totalPrice; 
             discountPercentageVal = 3;
         }
@@ -101,6 +98,7 @@ export function EstateCalcForm() {
     const totalPriceAfterDiscount = totalPrice - discount;
 
     let actualDownPaymentAmount = 0;
+    // Calculate actual down payment based on the price *after* discount
     if (watchedDownPaymentType === 'percentage') {
       const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
       if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
@@ -153,7 +151,10 @@ export function EstateCalcForm() {
                 <CardHeader>
                   <div className="flex justify-between items-center">
                     <CardTitle className="text-2xl text-primary">{t('formTitle')}</CardTitle>
-                    <LanguageSwitcher />
+                    <div className="flex items-center space-x-2">
+                       <LanguageSwitcher />
+                       <CurrencySwitcher />
+                    </div>
                   </div>
                   <CardDescription>{t('formDescription')}</CardDescription>
                 </CardHeader>
@@ -223,7 +224,7 @@ export function EstateCalcForm() {
                     name="pricePerSqMeter"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center"><CircleDollarSign className="mr-2 h-4 w-4 text-primary" />{t('pricePerSqMeterLabel')}</FormLabel>
+                        <FormLabel className="flex items-center"><CircleDollarSign className="mr-2 h-4 w-4 text-primary" />{t('pricePerSqMeterLabel')} ({currency})</FormLabel>
                         <FormControl><Input type="number" placeholder={t('pricePerSqMeterPlaceholder')} {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                         <FormMessage />
                       </FormItem>
@@ -250,7 +251,7 @@ export function EstateCalcForm() {
                             </FormItem>
                             <FormItem className="flex items-center space-x-2 space-y-0">
                               <FormControl><RadioGroupItem value="fixed" id="dpTypeFixed" /></FormControl>
-                              <FormLabel htmlFor="dpTypeFixed" className="font-normal">{t('downPaymentTypeFixed')}</FormLabel>
+                              <FormLabel htmlFor="dpTypeFixed" className="font-normal">{t('downPaymentTypeFixed')} ({currency})</FormLabel>
                             </FormItem>
                           </RadioGroup>
                         </FormControl>
@@ -278,7 +279,7 @@ export function EstateCalcForm() {
                       name="downPaymentFixed"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{t('downPaymentFixedLabel')}</FormLabel>
+                          <FormLabel>{t('downPaymentFixedLabel')} ({currency})</FormLabel>
                           <FormControl><Input type="number" placeholder={t('downPaymentFixedPlaceholder')} {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
@@ -322,7 +323,7 @@ export function EstateCalcForm() {
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-[calc(100vh-250px)] w-full rounded-md border border-border bg-muted/30">
-                    <div className="p-1 sm:p-2 md:p-4 min-w-[210mm] mx-auto">
+                    <div className="p-1 sm:p-2 md:p-4 min-w-[210mm] mx-auto"> {/* Ensure enough width for A4 content */}
                       <PrintablePage formData={form.getValues()} calculations={calculations} />
                     </div>
                   </ScrollArea>

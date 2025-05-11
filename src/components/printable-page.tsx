@@ -2,10 +2,10 @@
 import type { ApartmentCalcFormValues } from '@/lib/schema';
 import { Logo } from '@/components/logo';
 import { Separator } from '@/components/ui/separator';
-import { Card, CardContent } from '@/components/ui/card'; // Removed CardHeader, CardTitle as they are not used directly
+import { Card, CardContent } from '@/components/ui/card';
 import { Phone, Mail, MapPin } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { useI18n } from '@/lib/i18n'; // Import useI18n
+import { useI18n } from '@/lib/i18n'; 
 
 interface PrintablePageProps {
   formData: ApartmentCalcFormValues;
@@ -21,7 +21,7 @@ interface PrintablePageProps {
 }
 
 export function PrintablePage({ formData, calculations }: PrintablePageProps) {
-  const { t, formatCurrency } = useI18n(); // Get t and formatCurrency from context
+  const { t, formatCurrency, currency } = useI18n(); 
 
   return (
     <div id="printable-area" className="bg-card text-card-foreground shadow-lg print:shadow-none">
@@ -48,16 +48,16 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
           <h2 className="text-lg font-semibold text-primary mb-2">{t('priceAnalysisTitle')}</h2>
           <Card className="border-primary">
             <CardContent className="p-4 space-y-2">
-              <div className="flex justify-between"><span>{t('pricePerSqMeterPrintLabel')}:</span> <span>{formatCurrency(formData.pricePerSqMeter)}</span></div>
-              <div className="flex justify-between"><span>{t('totalGrossPriceLabel')}:</span> <span>{formatCurrency(calculations.totalPrice)}</span></div>
+              <div className="flex justify-between"><span>{t('pricePerSqMeterPrintLabel')} ({currency}):</span> <span>{formatCurrency(formData.pricePerSqMeter, currency)}</span></div>
+              <div className="flex justify-between"><span>{t('totalGrossPriceLabel')} ({currency}):</span> <span>{formatCurrency(calculations.totalPrice, currency)}</span></div>
               {calculations.discountApplied > 0 && (
                 <div className="flex justify-between text-success">
                   <span>{t('discountAppliedLabel')} ({calculations.discountPercentageVal}%):</span>
-                  <span>- {formatCurrency(calculations.discountApplied)}</span>
+                  <span>- {formatCurrency(calculations.discountApplied, currency)}</span>
                 </div>
               )}
               <Separator />
-              <div className="flex justify-between font-semibold"><span>{t('totalNetPriceLabel')}:</span> <span>{formatCurrency(calculations.totalPriceAfterDiscount)}</span></div>
+              <div className="flex justify-between font-semibold"><span>{t('totalNetPriceLabel')} ({currency}):</span> <span>{formatCurrency(calculations.totalPriceAfterDiscount, currency)}</span></div>
             </CardContent>
           </Card>
         </section>
@@ -67,17 +67,17 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
           <Card className="border-primary">
             <CardContent className="p-4 space-y-2">
               <div className="flex justify-between">
-                <span>{t('downPaymentPrintLabel')}:</span>
+                <span>{t('downPaymentPrintLabel')} ({currency}):</span>
                 <span>
                   {formData.downPaymentType === 'percentage'
-                    ? `${formData.downPaymentPercentage}% (${formatCurrency(calculations.downPaymentAmount)})`
-                    : formatCurrency(calculations.downPaymentAmount)}
+                    ? `${formData.downPaymentPercentage}% (${formatCurrency(calculations.downPaymentAmount, currency)})`
+                    : formatCurrency(calculations.downPaymentAmount, currency)}
                 </span>
               </div>
-              <div className="flex justify-between"><span>{t('remainingAmountLabel')}:</span> <span>{formatCurrency(calculations.remainingAmount)}</span></div>
+              <div className="flex justify-between"><span>{t('remainingAmountLabel')} ({currency}):</span> <span>{formatCurrency(calculations.remainingAmount, currency)}</span></div>
               <Separator />
               <div className="flex justify-between"><span>{t('installmentMonthsPrintLabel')}:</span> <span>{formData.installmentMonths}</span></div>
-              <div className="flex justify-between font-semibold"><span>{t('monthlyInstallmentLabel')}:</span> <span>{formatCurrency(calculations.monthlyInstallment)}</span></div>
+              <div className="flex justify-between font-semibold"><span>{t('monthlyInstallmentLabel')} ({currency}):</span> <span>{formatCurrency(calculations.monthlyInstallment, currency)}</span></div>
             </CardContent>
           </Card>
         </section>
@@ -104,7 +104,7 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
                 width={64}
                 height={64}
                 className="rounded"
-                fgColor="#0f5906"
+                fgColor="#00AF66" 
               />
               <p className="mt-1 text-muted-foreground">{t('scanForWebsiteText')}</p>
             </div>

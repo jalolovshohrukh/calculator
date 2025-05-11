@@ -1,7 +1,7 @@
 
 {
-  "appTitle": "[TJ] City Park Residence",
-  "appDescription": "[TJ] CityPark — a modern residential complex in Denov",
+  "appTitle": "City Park Residence",
+  "appDescription": "CityPark — маҷмааи истиқоматии муосир дар Денов",
   "formTitle": "Тафсилоти амвол ва пардохт",
   "formDescription": "Барои ҳисоб кардани нақшаи пардохти худ тафсилотро ворид кунед.",
   "apartmentBlockLabel": "Блоки манзил",
@@ -14,14 +14,14 @@
   "numberOfRoomsPlaceholder": "масалан, 3",
   "sizeSqMetersLabel": "Андоза (м. кв.)",
   "sizeSqMetersPlaceholder": "масалан, 80",
-  "pricePerSqMeterLabel": "Нарх барои як м. кв. (UZS)",
+  "pricePerSqMeterLabel": "Нарх барои як м. кв.",
   "pricePerSqMeterPlaceholder": "масалан, 5000000",
   "downPaymentTypeLabel": "Навъи пешпардохт",
   "downPaymentTypePercentage": "Фоиз (%)",
-  "downPaymentTypeFixed": "Маблағи муқарраршуда (UZS)",
+  "downPaymentTypeFixed": "Маблағи муқарраршуда",
   "downPaymentPercentageLabel": "Фоизи пешпардохт",
   "downPaymentPercentagePlaceholder": "масалан, 30",
-  "downPaymentFixedLabel": "Маблағи муқарраршудаи пешпардохт (UZS)",
+  "downPaymentFixedLabel": "Маблағи муқарраршудаи пешпардохт",
   "downPaymentFixedPlaceholder": "масалан, 120000000",
   "installmentMonthsLabel": "Моҳҳои пардохти қисмҳо",
   "selectMonthsPlaceholder": "Моҳҳоро интихоб кунед",
@@ -50,5 +50,6 @@
   "monthlyInstallmentLabel": "Пардохти моҳона",
   "contactInfoTitle": "Маълумоти тамос",
   "scanForWebsiteText": "Барои вебсайти ширкат скан кунед",
-  "languageSwitcherLabel": "Забонро интихоб кунед"
+  "languageSwitcherLabel": "Забонро интихоб кунед",
+  "currencySwitcherLabel": "Асъорро интихоб кунед"
 }
