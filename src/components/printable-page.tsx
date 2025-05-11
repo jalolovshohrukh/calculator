@@ -120,7 +120,7 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
             </div>
 
           </div>
-          <p className="text-center text-muted-foreground mt-4">Qiziqishingiz uchun tashakkur! Ushbu narxnoma 30 kun davomida amal qiladi.</p>
+          <p className="text-center text-muted-foreground mt-4"></p>
         </footer>
       </div>
     </div>
