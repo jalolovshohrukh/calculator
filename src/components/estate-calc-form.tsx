@@ -16,6 +16,8 @@ import { PrintablePage } from '@/components/printable-page';
 import { Separator } from '@/components/ui/separator';
 import { Building, Layers, DoorOpen, Square, CircleDollarSign, Landmark, CalendarDays, Printer, BedDouble } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
+import { useI18n } from '@/lib/i18n'; // Import useI18n
+import { LanguageSwitcher } from './language-switcher'; // Import LanguageSwitcher
 
 const initialCalculations = {
   totalPrice: 0,
@@ -28,8 +30,9 @@ const initialCalculations = {
 };
 
 export function EstateCalcForm() {
+  const { t, locale } = useI18n(); // Get t function and current locale
   const form = useForm<ApartmentCalcFormValues>({
-    resolver: zodResolver(apartmentCalcSchema),
+    resolver: zodResolver(apartmentCalcSchema), // Zod validation messages are not yet translated
     defaultValues: {
       apartmentBlock: 'A1',
       floor: 1,
@@ -52,6 +55,11 @@ export function EstateCalcForm() {
   const downPaymentFixed = form.watch("downPaymentFixed");
   const watchedInstallmentMonths = form.watch("installmentMonths");
 
+  // Re-run resolver when locale changes if Zod messages were localized
+  // useEffect(() => {
+  //   form.trigger(); // This could re-trigger validation if messages depend on locale
+  // }, [locale, form]);
+
 
   useEffect(() => {
     const parsedSize = parseFloat(String(sizeSqMeters));
@@ -68,26 +76,23 @@ export function EstateCalcForm() {
     let discountPercentageVal = 0;
     
     let potentialDownPaymentForDiscountTier = 0;
-    // Calculate potential down payment based on type *before* discount for discount tier evaluation
     if (watchedDownPaymentType === 'percentage') {
         const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
         if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
-            // Discount tier based on percentage of *original* total price
             potentialDownPaymentForDiscountTier = (parsedDpPercentage / 100) * totalPrice; 
         }
     } else { 
         const parsedDpFixed = parseFloat(String(downPaymentFixed));
         if (!isNaN(parsedDpFixed) && parsedDpFixed >= 0) {
-            // Discount tier based on fixed amount
             potentialDownPaymentForDiscountTier = parsedDpFixed;
         }
     }
     
     if (totalPrice > 0) { 
-        if (potentialDownPaymentForDiscountTier >= totalPrice) { // If down payment covers full original price
+        if (potentialDownPaymentForDiscountTier >= totalPrice) {
             discount = 0.07 * totalPrice; 
             discountPercentageVal = 7;
-        } else if (potentialDownPaymentForDiscountTier >= 0.5 * totalPrice) { // If down payment covers 50% of original price
+        } else if (potentialDownPaymentForDiscountTier >= 0.5 * totalPrice) {
             discount = 0.03 * totalPrice; 
             discountPercentageVal = 3;
         }
@@ -96,7 +101,6 @@ export function EstateCalcForm() {
     const totalPriceAfterDiscount = totalPrice - discount;
 
     let actualDownPaymentAmount = 0;
-    // Calculate actual down payment amount based on *totalPriceAfterDiscount*
     if (watchedDownPaymentType === 'percentage') {
       const parsedDpPercentage = parseFloat(String(downPaymentPercentage));
       if (!isNaN(parsedDpPercentage) && parsedDpPercentage >= 0 && parsedDpPercentage <= 100) {
@@ -110,7 +114,6 @@ export function EstateCalcForm() {
     }
     actualDownPaymentAmount = Math.max(0, actualDownPaymentAmount);
     actualDownPaymentAmount = Math.min(actualDownPaymentAmount, totalPriceAfterDiscount);
-
 
     const remainingAmount = totalPriceAfterDiscount - actualDownPaymentAmount;
     const currentInstallmentMonths = Number(watchedInstallmentMonths) || 0;
@@ -140,18 +143,19 @@ export function EstateCalcForm() {
   
   const downPaymentTypeForConditionalRender = form.watch("downPaymentType");
 
-
   return (
     <div className="container mx-auto p-4 lg:p-8">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(() => {})} className="space-y-8">
           <div className="lg:grid lg:grid-cols-12 lg:gap-9">
-            {/* Form Inputs Column */}
-            <div className="lg:col-span-4 space-y-6"> {/* Changed from lg:col-span-3 */}
+            <div className="lg:col-span-4 space-y-6">
               <Card className="shadow-xl">
                 <CardHeader>
-                  <CardTitle className="text-2xl text-primary">Mulk va To'lov Tafsilotlari</CardTitle>
-                  <CardDescription>To'lov rejangizni hisoblash uchun tafsilotlarni kiriting.</CardDescription>
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-2xl text-primary">{t('formTitle')}</CardTitle>
+                    <LanguageSwitcher />
+                  </div>
+                  <CardDescription>{t('formDescription')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -159,8 +163,8 @@ export function EstateCalcForm() {
                     name="apartmentBlock"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center"><Building className="mr-2 h-4 w-4 text-primary" />Kvartira Bloki</FormLabel>
-                        <FormControl><Input placeholder="masalan, A1" {...field} /></FormControl>
+                        <FormLabel className="flex items-center"><Building className="mr-2 h-4 w-4 text-primary" />{t('apartmentBlockLabel')}</FormLabel>
+                        <FormControl><Input placeholder={t('apartmentBlockPlaceholder')} {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -171,8 +175,8 @@ export function EstateCalcForm() {
                       name="floor"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center"><Layers className="mr-2 h-4 w-4 text-primary" />Qavat</FormLabel>
-                          <FormControl><Input type="number" placeholder="masalan, 2" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                          <FormLabel className="flex items-center"><Layers className="mr-2 h-4 w-4 text-primary" />{t('floorLabel')}</FormLabel>
+                          <FormControl><Input type="number" placeholder={t('floorPlaceholder')} {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -182,8 +186,8 @@ export function EstateCalcForm() {
                       name="apartmentNumber"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center"><DoorOpen className="mr-2 h-4 w-4 text-primary" />Kvartira Raqami</FormLabel>
-                          <FormControl><Input type="number" placeholder="masalan, 204" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                          <FormLabel className="flex items-center"><DoorOpen className="mr-2 h-4 w-4 text-primary" />{t('apartmentNumberLabel')}</FormLabel>
+                          <FormControl><Input type="number" placeholder={t('apartmentNumberPlaceholder')} {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -195,8 +199,8 @@ export function EstateCalcForm() {
                       name="numberOfRooms"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center"><BedDouble className="mr-2 h-4 w-4 text-primary" />Xonalar Soni</FormLabel>
-                          <FormControl><Input type="number" placeholder="masalan, 3" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                          <FormLabel className="flex items-center"><BedDouble className="mr-2 h-4 w-4 text-primary" />{t('numberOfRoomsLabel')}</FormLabel>
+                          <FormControl><Input type="number" placeholder={t('numberOfRoomsPlaceholder')} {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -206,8 +210,8 @@ export function EstateCalcForm() {
                       name="sizeSqMeters"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center"><Square className="mr-2 h-4 w-4 text-primary" />Hajmi (kv. metr)</FormLabel>
-                          <FormControl><Input type="number" placeholder="masalan, 80" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                          <FormLabel className="flex items-center"><Square className="mr-2 h-4 w-4 text-primary" />{t('sizeSqMetersLabel')}</FormLabel>
+                          <FormControl><Input type="number" placeholder={t('sizeSqMetersPlaceholder')} {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -219,14 +223,13 @@ export function EstateCalcForm() {
                     name="pricePerSqMeter"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center"><CircleDollarSign className="mr-2 h-4 w-4 text-primary" />Bir kv. metr narxi (UZS)</FormLabel>
-                        <FormControl><Input type="number" placeholder="masalan, 5000000" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                        <FormLabel className="flex items-center"><CircleDollarSign className="mr-2 h-4 w-4 text-primary" />{t('pricePerSqMeterLabel')}</FormLabel>
+                        <FormControl><Input type="number" placeholder={t('pricePerSqMeterPlaceholder')} {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                  
-
                   <Separator />
 
                   <FormField
@@ -234,7 +237,7 @@ export function EstateCalcForm() {
                     name="downPaymentType"
                     render={({ field }) => (
                       <FormItem className="space-y-3">
-                        <FormLabel className="flex items-center"><Landmark className="mr-2 h-4 w-4 text-primary" />Boshlang'ich To'lov Turi</FormLabel>
+                        <FormLabel className="flex items-center"><Landmark className="mr-2 h-4 w-4 text-primary" />{t('downPaymentTypeLabel')}</FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
@@ -243,11 +246,11 @@ export function EstateCalcForm() {
                           >
                             <FormItem className="flex items-center space-x-2 space-y-0">
                               <FormControl><RadioGroupItem value="percentage" id="dpTypePercentage" /></FormControl>
-                              <FormLabel htmlFor="dpTypePercentage" className="font-normal">Foiz (%)</FormLabel>
+                              <FormLabel htmlFor="dpTypePercentage" className="font-normal">{t('downPaymentTypePercentage')}</FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-2 space-y-0">
                               <FormControl><RadioGroupItem value="fixed" id="dpTypeFixed" /></FormControl>
-                              <FormLabel htmlFor="dpTypeFixed" className="font-normal">Qat'iy Miqdor (UZS)</FormLabel>
+                              <FormLabel htmlFor="dpTypeFixed" className="font-normal">{t('downPaymentTypeFixed')}</FormLabel>
                             </FormItem>
                           </RadioGroup>
                         </FormControl>
@@ -262,8 +265,8 @@ export function EstateCalcForm() {
                       name="downPaymentPercentage"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Boshlang'ich To'lov Foizi</FormLabel>
-                          <FormControl><Input type="number" placeholder="masalan, 30" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                          <FormLabel>{t('downPaymentPercentageLabel')}</FormLabel>
+                          <FormControl><Input type="number" placeholder={t('downPaymentPercentagePlaceholder')} {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -275,8 +278,8 @@ export function EstateCalcForm() {
                       name="downPaymentFixed"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Boshlang'ich To'lovning Qat'iy Miqdori (UZS)</FormLabel>
-                          <FormControl><Input type="number" placeholder="masalan, 120000000" {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
+                          <FormLabel>{t('downPaymentFixedLabel')}</FormLabel>
+                          <FormControl><Input type="number" placeholder={t('downPaymentFixedPlaceholder')} {...field} onChange={e => field.onChange(e.target.value === '' ? '' : Number(e.target.value))} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -288,16 +291,16 @@ export function EstateCalcForm() {
                     name="installmentMonths"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="flex items-center"><CalendarDays className="mr-2 h-4 w-4 text-primary" />Bo'lib To'lash Oylari</FormLabel>
+                        <FormLabel className="flex items-center"><CalendarDays className="mr-2 h-4 w-4 text-primary" />{t('installmentMonthsLabel')}</FormLabel>
                         <Select 
                             onValueChange={(value) => field.onChange(Number(value))} 
                             value={String(field.value)}
                         >
-                          <FormControl><SelectTrigger><SelectValue placeholder="Oylarni tanlang" /></SelectTrigger></FormControl>
+                          <FormControl><SelectTrigger><SelectValue placeholder={t('selectMonthsPlaceholder')} /></SelectTrigger></FormControl>
                           <SelectContent>
-                            <SelectItem value="12">12 Oy</SelectItem>
-                            <SelectItem value="24">24 Oy</SelectItem>
-                            <SelectItem value="36">36 Oy</SelectItem>
+                            <SelectItem value="12">{t('months12')}</SelectItem>
+                            <SelectItem value="24">{t('months24')}</SelectItem>
+                            <SelectItem value="36">{t('months36')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -305,22 +308,21 @@ export function EstateCalcForm() {
                     )}
                   />
                    <Button type="button" onClick={handlePrint} className="w-full no-print mt-6">
-                    <Printer className="mr-2 h-4 w-4" /> Narxnoma Chop Etish
+                    <Printer className="mr-2 h-4 w-4" /> {t('printButtonText')}
                   </Button>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Preview Column */}
-            <div className="lg:col-span-8 mt-8 lg:mt-0 no-print"> {/* Changed from lg:col-span-9 */}
+            <div className="lg:col-span-8 mt-8 lg:mt-0 no-print">
               <Card className="shadow-xl">
                 <CardHeader>
-                  <CardTitle className="text-2xl text-primary">Narxnoma Ko'rinishi</CardTitle>
-                  <CardDescription>Chop etiladigan narxnomangiz shunday ko'rinishda bo'ladi.</CardDescription>
+                  <CardTitle className="text-2xl text-primary">{t('previewTitle')}</CardTitle>
+                  <CardDescription>{t('previewDescription')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ScrollArea className="h-[calc(100vh-250px)] w-full rounded-md border border-border bg-muted/30">
-                    <div className="p-1 sm:p-2 md:p-4 min-w-[210mm] mx-auto"> {/* Ensured min-width and centered for scrollable content */}
+                    <div className="p-1 sm:p-2 md:p-4 min-w-[210mm] mx-auto">
                       <PrintablePage formData={form.getValues()} calculations={calculations} />
                     </div>
                   </ScrollArea>
@@ -330,11 +332,9 @@ export function EstateCalcForm() {
           </div>
         </form>
       </Form>
-      {/* Hidden div for actual printing */}
       <div className="hidden print:block">
          <PrintablePage formData={form.getValues()} calculations={calculations} />
       </div>
     </div>
   );
 }
-
