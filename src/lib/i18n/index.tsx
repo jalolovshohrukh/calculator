@@ -61,6 +61,48 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
     return text;
   };
   
+  const getFractionDigitsConfig = (currencyCode: string) => {
+    const upperCurrencyCode = currencyCode.toUpperCase();
+    switch (upperCurrencyCode) {
+      // Currencies with 0 decimal places
+      case 'UZS':
+      case 'JPY': // Japanese Yen
+      case 'KRW': // South Korean Won
+      case 'VND': // Vietnamese Dong
+      // Add other currencies that typically use 0 decimal places
+        return { minimumFractionDigits: 0, maximumFractionDigits: 0 };
+      
+      // Currencies with 2 decimal places
+      case 'USD': // US Dollar
+      case 'RUB': // Russian Ruble
+      case 'TJS': // Tajikistani Somoni
+      case 'EUR': // Euro
+      case 'GBP': // British Pound
+      case 'CAD': // Canadian Dollar
+      case 'AUD': // Australian Dollar
+      case 'CHF': // Swiss Franc
+      case 'CNY': // Chinese Yuan Renminbi
+      case 'INR': // Indian Rupee
+      // Add other common currencies that typically use 2 decimal places
+        return { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+
+      // Currencies with 3 decimal places
+      case 'BHD': // Bahraini Dinar
+      case 'IQD': // Iraqi Dinar
+      case 'JOD': // Jordanian Dinar
+      case 'KWD': // Kuwaiti Dinar
+      case 'LYD': // Libyan Dinar
+      case 'OMR': // Omani Rial
+      case 'TND': // Tunisian Dinar
+        return { minimumFractionDigits: 3, maximumFractionDigits: 3 };
+      
+      default:
+        // Default for unknown or unlisted currencies.
+        // Using 2 decimal places is a common practice.
+        return { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+    }
+  };
+
   const formatCurrency = (amount: number, currency: string = 'UZS'): string => {
     let targetLocaleForFormatting: string;
     switch (locale) {
@@ -70,17 +112,22 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
         case 'uz': targetLocaleForFormatting = 'uz-Latn-UZ'; break;
         default: targetLocaleForFormatting = 'en-US';
     }
+
+    const fractionDigitsConfig = getFractionDigitsConfig(currency);
+
     try {
         return new Intl.NumberFormat(targetLocaleForFormatting, { 
             style: 'currency', 
             currency: currency, 
-            minimumFractionDigits: 0, 
-            maximumFractionDigits: 0 
+            ...fractionDigitsConfig
         }).format(amount);
     } catch (e) {
         console.error("Currency formatting error:", e);
         // Fallback with basic formatting
-        const formattedAmount = amount.toLocaleString(targetLocaleForFormatting.split('-')[0] || 'en');
+        const formattedAmount = amount.toLocaleString(targetLocaleForFormatting.split('-')[0] || 'en', {
+            minimumFractionDigits: fractionDigitsConfig.minimumFractionDigits,
+            maximumFractionDigits: fractionDigitsConfig.maximumFractionDigits,
+        });
         return `${currency} ${formattedAmount}`;
     }
   };
@@ -99,3 +146,4 @@ export const useI18n = (): I18nContextType => {
   }
   return context;
 };
+
