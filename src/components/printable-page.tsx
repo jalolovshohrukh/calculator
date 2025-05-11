@@ -104,7 +104,7 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
                 width={64}
                 height={64}
                 className="rounded"
-                fgColor="#00AF66" 
+                fgColor="#0f5906" 
               />
               <p className="mt-1 text-muted-foreground">{t('scanForWebsiteText')}</p>
             </div>
