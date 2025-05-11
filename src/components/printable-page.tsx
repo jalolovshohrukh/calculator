@@ -114,7 +114,7 @@ export function PrintablePage({ formData, calculations }: PrintablePageProps) {
                 width={64}
                 height={64}
                 className="rounded"
-                fgColor="#004040 "       // Foreground (QR code) color - example: Tailwind's blue-800
+                fgColor="#0f5906"       // Foreground (QR code) color - example: Tailwind's blue-800
               />
               <p className="mt-1 text-muted-foreground">Kompaniya veb-sayti uchun skanerlang</p>
             </div>
